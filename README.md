@@ -36,11 +36,35 @@ TODO
 
 ### Common Lisp
 
-TODO
+Dedicated file proposes 2 functions:
+
+``` lisp
+(defun leibniz-pi-1 (n)
+  "Calculate an approximation of π using Leibniz formula with N terms."
+  (let ((tmp 0.0d0)
+        (sign 1.0d0))
+    (dotimes (i n)
+      (setq tmp (+ tmp (/ sign (+ (* 2 i) 1))))
+      (setq sign (- sign)))
+    (* 4 tmp)))
+
+(defun leibniz-pi-2 (n)
+  "Calculate an approximation of π using Leibniz formula with N terms."
+  (let ((tmp 0.0d0)
+        (sign t))
+    (dotimes (i n)
+      (setq tmp (if sign
+                   (+ tmp (/ 1.0d0 (+ (* 2 i) 1)))
+                 (- tmp (/ 1.0d0 (+ (* 2 i) 1)))))
+      (setq sign (not sign)))
+    (* 4 tmp)))
+```
+
+They yield 3.141592643589326d0 in several seconds.
 
 ### Emacs Lisp
 
-Dedicates file proposes 2 functions:
+Dedicated file proposes 2 functions:
 
 ``` elisp
 (defun leibniz-pi-1 (n)
@@ -62,7 +86,7 @@ Dedicates file proposes 2 functions:
       (setq sign (not sign)))))
 ```
 
-They yield 3.1415925535897915 in several seconds.
+With 10000000 (7 zeros only), they yield 3.1415925535897915 in several seconds.
 
 ### Excel
 
