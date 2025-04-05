@@ -40,7 +40,29 @@ TODO
 
 ### Emacs Lisp
 
-TODO
+Dedicates file proposes 2 functions:
+
+``` elisp
+(defun leibniz-pi-1 (n)
+  "Calculate an approximation of π using Leibniz formula with N terms."
+  (let ((tmp 0.0)
+        (sign 1.0))
+    (dotimes (i n (* 4 tmp))
+      (setq tmp (+ tmp (/ sign (float (+ (* 2 i) 1)))))
+      (setq sign (- sign)))))
+
+(defun leibniz-pi-2 (n)
+  "Calculate an approximation of π using Leibniz formula with N terms."
+  (let ((tmp 0.0)
+        (sign t))
+    (dotimes (i n (* 4 tmp))
+      (setq tmp (if sign
+                   (+ tmp (/ 1 (float (+ (* 2 i) 1))))
+                 (- tmp (/ 1 (float (+ (* 2 i) 1))))))
+      (setq sign (not sign)))))
+```
+
+They yield 3.1415925535897915 in several seconds.
 
 ### Excel
 
