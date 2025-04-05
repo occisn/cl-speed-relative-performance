@@ -20,29 +20,29 @@ More precisely, compared languages will be:
 
 ## Table of contents
 
-**[Leibniz formula](#leibniz-formula)** : [synthesis](#leibniz-synthesis), [C](#leibniz-c), [Common Lisp](#leibniz-common-lisp), [Emacs Lisp](#leibniz-emacs-lisp), [Excel](#leibniz-excel)
+**[Leibniz formula](#leibniz-formula)** : [synthesis](#synthesis), [C](#c), [Common Lisp](#common-lisp), [Emacs Lisp](#emacs-lisp), [Excel](#excel)
 
 ## Leibniz formula
 
 As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/speed-comparison) of programming language, we will use [Leibniz formula](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) 100000000 (8 zeros) times to calculate an approximate value of pi.
 
-### Synthesis {#leibniz-synthesis}
+### Synthesis
 
 TODO
 
-### C {#leibniz-c}
+### C
 
 TODO
 
-### Common Lisp {#leibniz-common-lisp}
+### Common Lisp
 
 TODO
 
-### Emacs Lisp {#leibniz-emacs-lisp}
+### Emacs Lisp
 
 TODO
 
-### Excel {#leibniz-excel}
+### Excel
 
 TODO
 
