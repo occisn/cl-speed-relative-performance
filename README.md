@@ -32,14 +32,14 @@ As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/
 
 TODO:
 
-
-| Language    | Results | Execution duration |
-|-------------|---------|--------------------|
-| C            |         |                    |
-| Common Lisp |         |                    |
-| Emacs Lisp  |         |                    |
-| Excel       |         |                    |
-
+| Language        | Results                | Execution duration |
+|-----------------|------------------------|--------------------|
+| C               | 3.14159266358932587337 |                    |
+| Common Lisp     | 3.141592643589326      |                    |
+| Emacs Lisp      |                        |                    |
+| Excel VBA       | 3.14159266358937000000 |                    |
+| Excel recursion | 3.14159266358962000000 |                    |
+| Excel arrays    | 3.14159266358979000000 |                    |
 
 
 ### C
@@ -131,19 +131,19 @@ Function ReversedNumber(ByVal n As Long) As Long
 End Function
 ```
 
-Yields: 3,14159266358937000000
+Yields: 3.14159266358937000000
 
 **File B** = 1000x1000 table in spreadsheet  
 only 1000000 (6 zeros) but already 16 Mo
 
-Yields 3,14159365258979000000
+Yields 3.14159365258979000000
 
 **File C** = **recursion**
 
-Yields 3,14159266358962000000 
+Yields 3.14159266358962000000 
 
 **File D** = **array formulas**
 
-Yields 3,14159266358979000000 
+Yields 3.14159266358979000000 
 
 (end of README)
