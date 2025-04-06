@@ -30,7 +30,17 @@ As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/
 
 ### Synthesis
 
-TODO
+TODO:
+
+
+| Language    | Results | Execution duration |
+|-------------|---------|--------------------|
+| C            |         |                    |
+| Common Lisp |         |                    |
+| Emacs Lisp  |         |                    |
+| Excel       |         |                    |
+
+
 
 ### C
 
@@ -107,6 +117,33 @@ With 10000000 (7 zeros only), they yield 3.1415925535897915 in several seconds.
 
 ### Excel
 
-TODO
+**File A** = **VBA**
+
+``` VBA
+Function ReversedNumber(ByVal n As Long) As Long
+    Dim LastDigit As Long
+    ReversedNumber = 0
+    Do While n > 0
+        LastDigit = n Mod 10
+        n = n \ 10
+        ReversedNumber = 10 * ReversedNumber + LastDigit
+    Loop
+End Function
+```
+
+Yields: 3,14159266358937000000
+
+**File B** = 1000x1000 table in spreadsheet  
+only 1000000 (6 zeros) but already 16 Mo
+
+Yields 3,14159365258979000000
+
+**File C** = **recursion**
+
+Yields 3,14159266358962000000 
+
+**File D** = **array formulas**
+
+Yields 3,14159266358979000000 
 
 (end of README)
