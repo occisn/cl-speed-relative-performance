@@ -2,6 +2,8 @@
 
 Hobby project to compare execution speed between several languages, namely C, Common Lisp, Emacs Lisp and... Excel.
 
+**WORK IN PROGRESS - NOT STABILIZED YET**
+
 One of the objectives is to see to which extent Common Lisp could be as fast as C.
 
 We will first use Leibniz formula as a test case.
@@ -32,7 +34,20 @@ TODO
 
 ### C
 
-TODO
+``` C
+int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
+  uint64_t n = 100000000; // 8 zeros
+  double tmp = 0.0;
+  double sign = 1.0;
+  for (uint64_t i = 0; i <= n; i++) {
+    tmp = tmp + sign / (2.0 * i + 1.0);
+    sign = -sign;
+  }
+  tmp = 4 * tmp;
+  printf("Result: %.20f\n", tmp);
+  return EXIT_SUCCESS;
+}
+```
 
 ### Common Lisp
 
