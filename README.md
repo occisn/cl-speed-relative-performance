@@ -49,6 +49,8 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
 }
 ```
 
+This yields 3.14159266358932587337 in a few seconds.
+
 ### Common Lisp
 
 Dedicated file proposes 2 functions:
