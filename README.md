@@ -102,7 +102,7 @@ Dedicated file proposes 2 functions:
     (* 4 tmp)))
 ```
 
-They yield 3.141592643589326d0 in several seconds.
+They yield 3.141592643589326d0 in several seconds for 100000000 (8 zeros).
 
 ### Emacs Lisp
 
