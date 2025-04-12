@@ -44,12 +44,13 @@ TODO:
 
 ### C
 
+The basis function `leibniz_3` is:
 ``` C
-int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
-  uint64_t n = 100000000; // 8 zeros
+int leibniz_3() {
+  uint64_t n9 = 1000000000; // 9 zeros
   double tmp = 0.0;
   double sign = 1.0;
-  for (uint64_t i = 0; i <= n; i++) {
+  for (uint64_t i = 0; i <= n9; i++) {
     tmp = tmp + sign / (2.0 * i + 1.0);
     sign = -sign;
   }
@@ -59,7 +60,21 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
 }
 ```
 
-This yields 3.14159266358932587337 in a few seconds.
+Several optimizations are proposed, all with -O3 flag:
+
+
+`leibniz_1`: calculate (-1)^i and is very slow  
+`leibniz_2`: work with a change of boolean flag = 1 second  
+`leibniz_3`: change of sign = 1 second  
+`leibniz_4`: loop unrolling with 4 operations per iteration = 1 second = no gain  
+`leibniz_5`: parallelization with 4 operations per iteration = 0.28 second  
+`leibniz_6`: parallelization with 16 operations per iteration = 0.28 second  
+`leibniz_7`: SIMD vectorization with 8-array for float precision, but no parallelization = 0.7 second  
+`leibniz_8`: SIMD vectorization with 4-array for double precision, but no parallelization = 0.5 second  
+`leibniz_9`: SIMD vectorization with 8-array for float precision, and parallelization = 0.20 second  
+`leibniz_10`: SIMD vectorization with 4-array for double precision, and parallelization = 0.14 second
+
+There is a x7 gain between initial `leibniz_3` and final `leibniz_10` optimized with  SIMD vectorization with 4-array for double precision, and parallelization.
 
 ### Common Lisp
 
