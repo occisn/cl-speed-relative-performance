@@ -22,7 +22,7 @@ More precisely, compared languages will be:
 
 ## Table of contents
 
-**[Leibniz formula](#leibniz-formula)** : [synthesis](#synthesis), [C](#c), [Common Lisp](#common-lisp), [Emacs Lisp](#emacs-lisp), [Excel](#excel)
+**[Leibniz formula](#leibniz-formula)** : [synthesis](#synthesis), [C](#c), [Common Lisp SBCL](#common-lisp-sbcl), [Emacs Lisp](#emacs-lisp), [Excel](#excel)
 
 ## Leibniz formula
 
@@ -76,33 +76,22 @@ Several optimizations are proposed, all with -O3 flag:
 
 There is a x7 gain between initial `leibniz_3` and final `leibniz_10` optimized with  SIMD vectorization with 4-array for double precision, and parallelization.
 
-### Common Lisp
+### Common Lisp SBCL
 
-Dedicated file proposes 2 functions:
+Basis function is:
 
 ``` lisp
-(defun leibniz-pi-1 (n)
-  "Calculate an approximation of π using Leibniz formula with N terms."
+(defun leibniz-2 ()
+  "Calculate an approximation of π using Leibniz formula."
   (let ((tmp 0.0d0)
         (sign 1.0d0))
-    (dotimes (i n)
+    (dotimes (i *n8*)
       (setq tmp (+ tmp (/ sign (+ (* 2 i) 1))))
       (setq sign (- sign)))
     (* 4 tmp)))
-
-(defun leibniz-pi-2 (n)
-  "Calculate an approximation of π using Leibniz formula with N terms."
-  (let ((tmp 0.0d0)
-        (sign t))
-    (dotimes (i n)
-      (setq tmp (if sign
-                   (+ tmp (/ 1.0d0 (+ (* 2 i) 1)))
-                 (- tmp (/ 1.0d0 (+ (* 2 i) 1)))))
-      (setq sign (not sign)))
-    (* 4 tmp)))
 ```
 
-They yield 3.141592643589326d0 in several seconds for 100000000 (8 zeros).
+Several optimizations are proposed, including type declaration and full use of SBCL compiler.
 
 ### Emacs Lisp
 
