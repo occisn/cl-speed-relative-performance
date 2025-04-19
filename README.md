@@ -26,25 +26,25 @@ More precisely, compared languages will be:
 
 ## Leibniz formula
 
-As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/speed-comparison) of programming language, we will use [Leibniz formula](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) 100000000 (8 zeros) times to calculate an approximate value of pi.
+As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/speed-comparison) of programming language, we will use [Leibniz formula](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) n times to calculate an approximate value of pi.
 
 ### Synthesis
 
 Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
-For n = 10000000000 (10 zeros):
+For n = 10000000000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL is as quick as C:
 
 | Language                                     | Results                    | Execution duration | Function name |
 |----------------------------------------------|----------------------------|--------------------|---------------|
-| C, -O3, basic                                | **3.141592653**68834583754 | 10.0 s             | leibniz 3     |
-| C, -O3, with 4-loop unrolling                | **3.141592653**48834582099 | 10.0 s             | leibniz 4     |
-| SBCL, basic                                  |                            | 177 s [3]          | leibniz 2     |
-| SBCL, typed and (speed 3)                    | **3.141592653**68834600000 | 12.6 s             | leibniz 4     |
-| SBCL, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000 | 9.7 s [4]          | leibniz 5     |
-| Emacs Lisp                                   |                            | ???                | ???            |
-| Excel VBA                                    |                            | 300 s [3]          |               |
-| Excel recursion (all cores)                  |                            | 1300 s [1]         |               |
-| Excel arrays formulas (all cores)            |                            | 240 s [2]          |               |
+| **C**, -O3, basic                                | **3.141592653**68834583754 | 10.0 s             | leibniz 3     |
+| **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099 | 10.0 s             | leibniz 4     |
+| **SBCL**, basic                                  |                            | 177 s [3]          | leibniz 2     |
+| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000 | 12.6 s             | leibniz 4     |
+| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000 | 9.7 s [4]          | leibniz 5     |
+| **Emacs Lisp**                                   |                            | ???                | ???            |
+| **Excel** VBA                                    |                            | 300 s [3]          |               |
+| **Excel*** recursion (all cores)                  |                            | 1300 s [1]         |               |
+| **Excel** arrays formulas (all cores)            |                            | 240 s [2]          |               |
 
 
 [1] extrapolated from n = 10000000 (7 zeros)  
@@ -54,7 +54,7 @@ For n = 10000000000 (10 zeros):
 
 ### C
 
-The basis function `leibniz_3` is:
+Basic function is:
 ``` C
 int leibniz_3() {
   uint64_t n9 = 1000000000; // 9 zeros
@@ -72,7 +72,7 @@ int leibniz_3() {
 
 ### Common Lisp SBCL
 
-Basis function is:
+Basic function is:
 
 ``` lisp
 (defun leibniz-2 ()
@@ -89,7 +89,7 @@ Several optimizations are proposed, including type declaration and full use of S
 
 ### Emacs Lisp
 
-Basis function is:
+Basic function is:
 
 ``` elisp
 (defun leibniz-pi-1 (n)
