@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t; -*-
 
-(defun leibniz-pi-C (n)
+(defun leibniz-C-1 (n)
   "Calculate an approximation of π using Leibniz formula with N terms."
   (let ((start-time (current-time))
         (tmp 0.0)
@@ -13,6 +13,18 @@
            (duration (float-time (time-subtract end-time start-time))))
       (message "Result: %.20f in %f seconds" tmp duration))))
 
-;; (leibniz-pi-C 10000000) ; 7 zeros
+(defun leibniz-C-2 (n)
+  "Calculate an approximation of π using Leibniz formula with N terms."
+  (let ((start-time (current-time))
+        (tmp 0.0))
+    (dotimes (i n)
+      (setq tmp (+ tmp (/ (if (cl-evenp i) 1.0 -1.0) (float (+ (* 2 i) 1))))))
+    (setq tmp (* 4 tmp))
+    (let* ((end-time (current-time))
+           (duration (float-time (time-subtract end-time start-time))))
+      (message "Result: %.20f in %f seconds" tmp duration))))
+
+;; (leibniz-C-1 10000000) ; 7 zeros
+;; (leibniz-C-2 10000000) ; 7 zeros
 
 ;;; end

@@ -16,6 +16,7 @@ More precisely, compared languages will be:
 - Common Lisp calling C with CFFI  
 - Emacs Lisp  
 - Emacs Lisp with native compilation  
+- Emacs Lisp calling C with FFI  
 - Excel VBA  
 - Excel formulas.
 
@@ -41,9 +42,9 @@ For n = 10000000000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL
 | **SBCL**, basic                                  |                            | 177 s [3]          | leibniz 2     |
 | **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000 | 12.6 s             | leibniz 4     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000 | 9.7 s [4]          | leibniz 5     |
-| **Emacs Lisp**, interpreted                      |                            | 689 s [1]          |               |
-| **Emacs Lisp**, byte-compiled                    |                            | 428 s [1]          |               |
-| **Emacs Lisp**, native-compiled                  |                            | 415 s [1]          |               |
+| **Emacs Lisp**, interpreted                      |                            | 996 s [1]          | leibniz A 2   |
+| **Emacs Lisp**, byte-compiled                    |                            | 343 s [1]          | leibniz B 2   |
+| **Emacs Lisp**, native-compiled                  |                            | 332 s [1]          | leibniz C 2   |
 | **Excel** VBA                                    |                            | 300 s [3]          |               |
 | **Excel*** recursion (all cores)                 |                            | 1300 s [1]         |               |
 | **Excel** arrays formulas (all cores)            |                            | 240 s [2]          |               |
@@ -77,7 +78,7 @@ int leibniz_3() {
 Basic function is:
 
 ``` lisp
-(defun leibniz-2 ()
+(defun leibniz ()
   "Calculate an approximation of π using Leibniz formula."
   (let ((tmp 0.0d0)
         (sign 1.0d0))
@@ -94,13 +95,13 @@ Several optimizations are proposed, including type declaration and full use of S
 Basic function is:
 
 ``` elisp
-(defun leibniz-pi-1 (n)
+(defun leibniz (n)
   "Calculate an approximation of π using Leibniz formula with N terms."
-  (let ((tmp 0.0)
-        (sign 1.0))
-    (dotimes (i n (* 4 tmp))
-      (setq tmp (+ tmp (/ sign (float (+ (* 2 i) 1)))))
-      (setq sign (- sign)))))
+  (let ((tmp 0.0))
+    (dotimes (i n)
+      (setq tmp (+ tmp (/ (if (cl-evenp i) 1.0 -1.0) (float (+ (* 2 i) 1))))))
+    (setq tmp (* 4 tmp))
+    (message "Result: %.20f" tmp)))
 ```
 
 ### Excel
