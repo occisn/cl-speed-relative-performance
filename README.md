@@ -30,17 +30,27 @@ As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/
 
 ### Synthesis
 
-TODO:
+Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
-| Language        | Results                | Execution duration |
-|-----------------|------------------------|--------------------|
-| C               | 3.14159266358932587337 |                    |
-| Common Lisp     | 3.141592643589326      |                    |
-| Emacs Lisp      |                        |                    |
-| Excel VBA       | 3.14159266358937000000 |                    |
-| Excel recursion | 3.14159266358962000000 |                    |
-| Excel arrays    | 3.14159266358979000000 |                    |
+For n = 10000000000 (10 zeros):
 
+| Language                                     | Results                    | Execution duration | Function name |
+|----------------------------------------------|----------------------------|--------------------|---------------|
+| C, -O3, basic                                | **3.141592653**68834583754 | 10.0 s             | leibniz 3     |
+| C, -O3, with 4-loop unrolling                | **3.141592653**48834582099 | 10.0 s             | leibniz 4     |
+| SBCL, basic                                  |                            | 177 s [3]          | leibniz 2     |
+| SBCL, typed and (speed 3)                    | **3.141592653**68834600000 | 12.6 s             | leibniz 4     |
+| SBCL, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000 | 9.7 s [4]          | leibniz 5     |
+| Emacs Lisp                                   |                            | ???                | ???            |
+| Excel VBA                                    |                            | 300 s [3]          |               |
+| Excel recursion (all cores)                  |                            | 1300 s [1]         |               |
+| Excel arrays formulas (all cores)            |                            | 240 s [2]          |               |
+
+
+[1] extrapolated from n = 10000000 (7 zeros)  
+[2] extrapolated from n = 100000000 (8 zeros)  
+[3] extrapolated from n = 1000000000 (9 zeros)  
+[4] 8- and 16-loop unrolling do not yield quicker results
 
 ### C
 
@@ -59,22 +69,6 @@ int leibniz_3() {
   return EXIT_SUCCESS;
 }
 ```
-
-Several optimizations are proposed, all with -O3 flag:
-
-
-`leibniz_1`: calculate (-1)^i and is very slow  
-`leibniz_2`: work with a change of boolean flag = 1 second  
-`leibniz_3`: change of sign = 1 second  
-`leibniz_4`: loop unrolling with 4 operations per iteration = 1 second = no gain  
-`leibniz_5`: parallelization with 4 operations per iteration = 0.28 second  
-`leibniz_6`: parallelization with 16 operations per iteration = 0.28 second  
-`leibniz_7`: SIMD vectorization with 8-array for float precision, but no parallelization = 0.7 second  
-`leibniz_8`: SIMD vectorization with 4-array for double precision, but no parallelization = 0.5 second  
-`leibniz_9`: SIMD vectorization with 8-array for float precision, and parallelization = 0.20 second  
-`leibniz_10`: SIMD vectorization with 4-array for double precision, and parallelization = 0.14 second
-
-There is a x7 gain between initial `leibniz_3` and final `leibniz_10` optimized with  SIMD vectorization with 4-array for double precision, and parallelization.
 
 ### Common Lisp SBCL
 
@@ -95,7 +89,7 @@ Several optimizations are proposed, including type declaration and full use of S
 
 ### Emacs Lisp
 
-Dedicated file proposes 2 functions:
+Basis function is:
 
 ``` elisp
 (defun leibniz-pi-1 (n)
@@ -105,49 +99,32 @@ Dedicated file proposes 2 functions:
     (dotimes (i n (* 4 tmp))
       (setq tmp (+ tmp (/ sign (float (+ (* 2 i) 1)))))
       (setq sign (- sign)))))
-
-(defun leibniz-pi-2 (n)
-  "Calculate an approximation of π using Leibniz formula with N terms."
-  (let ((tmp 0.0)
-        (sign t))
-    (dotimes (i n (* 4 tmp))
-      (setq tmp (if sign
-                   (+ tmp (/ 1 (float (+ (* 2 i) 1))))
-                 (- tmp (/ 1 (float (+ (* 2 i) 1))))))
-      (setq sign (not sign)))))
 ```
-
-With 10000000 (7 zeros only), they yield 3.1415925535897915 in several seconds.
 
 ### Excel
 
 **File A** = **VBA**
 
 ``` VBA
-Function ReversedNumber(ByVal n As Long) As Long
-    Dim LastDigit As Long
-    ReversedNumber = 0
-    Do While n > 0
-        LastDigit = n Mod 10
-        n = n \ 10
-        ReversedNumber = 10 * ReversedNumber + LastDigit
-    Loop
+Function Leibniz(n As Long) As Double
+    Dim tmp As Double
+    Dim sign As Double
+    Dim i As Long
+    tmp = 0
+    sign = 1
+    For i = 0 To n
+        tmp = tmp + sign / (2 * i + 1)
+        sign = -sign
+    Next i
+    Leibniz = 4 * tmp
 End Function
 ```
-
-Yields: 3.14159266358937000000
 
 **File B** = 1000x1000 table in spreadsheet  
 only 1000000 (6 zeros) but already 16 Mo
 
-Yields 3.14159365258979000000
-
 **File C** = **recursion**
 
-Yields 3.14159266358962000000 
-
 **File D** = **array formulas**
-
-Yields 3.14159266358979000000 
 
 (end of README)
