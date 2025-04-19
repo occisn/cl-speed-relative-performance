@@ -34,16 +34,18 @@ Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
 For n = 10000000000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL is as quick as C:
 
-| Language                                     | Results                    | Execution duration | Function name |
-|----------------------------------------------|----------------------------|--------------------|---------------|
+| Language                                         | Results                    | Execution duration | Function name |
+|--------------------------------------------------|----------------------------|--------------------|---------------|
 | **C**, -O3, basic                                | **3.141592653**68834583754 | 10.0 s             | leibniz 3     |
 | **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099 | 10.0 s             | leibniz 4     |
 | **SBCL**, basic                                  |                            | 177 s [3]          | leibniz 2     |
 | **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000 | 12.6 s             | leibniz 4     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000 | 9.7 s [4]          | leibniz 5     |
-| **Emacs Lisp**                                   |                            | ???                | ???            |
+| **Emacs Lisp**, interpreted                      |                            | 689 s [1]          |               |
+| **Emacs Lisp**, byte-compiled                    |                            | 428 s [1]          |               |
+| **Emacs Lisp**, native-compiled                  |                            | 415 s [1]          |               |
 | **Excel** VBA                                    |                            | 300 s [3]          |               |
-| **Excel*** recursion (all cores)                  |                            | 1300 s [1]         |               |
+| **Excel*** recursion (all cores)                 |                            | 1300 s [1]         |               |
 | **Excel** arrays formulas (all cores)            |                            | 240 s [2]          |               |
 
 
