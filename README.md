@@ -19,8 +19,8 @@ More precisely, compared languages will be:
 - Emacs Lisp calling C with FFI  
 - Excel VBA  
 - Excel formulas  
-- Excel calling C
-
+- Excel calling C  
+- (for fun) perhaps Gnu Calc
 
 ## Table of contents
 
@@ -52,7 +52,7 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 | **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 3430 s [1]         | leibniz B 2   |
 | **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 3320 s [1]         | leibniz C 2   |
 | **Excel** VBA                                    | **3.14159265**458790000000 [3] | 286 s [3]          |               |
-| **Excel** recursion (all cores)                  | **3.141592**75358981000000 [1] | 3500 s [1]         | recursion 2   |
+| **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [2] | 1043 s [2]         | recursion 2   |
 | **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [2] | 2464 s [2]         |               |
 
 
@@ -159,7 +159,23 @@ The same file with a 1,000 x 1,000 = 1,000,000 (6 zeros) table would weight arou
 
 File C, version 1, divises 0 - 10,000,000 (7 zeros) in 3054 chunks of 3275 range (Excel recursion max depth), then uses recursion on each chunk.
 
-Version 2 performs the same, but chunks limits are hard-coded: it improves speed from 13s to 3.5s.
+Typical formula is:
+``` Excel
+=LET(
+SUB;LAMBDA(ME;A;B;SI(B<A;0;(-1)^B/(2*B+1)+ME(ME;A;B-1)));
+SUB(SUB;B10;C10))
+```
+
+Version 2 performs the same, but chunks are 32 times larger, since each formula computes 32 terms of the sum:
+``` Excel
+=LET(
+SUB;LAMBDA(ME;A;B;SI(A+31>B;0;1/(2*A+1)-1/(2*A+3)+1/(2*A+5)-1/(2*A+7)+1/(2*A+9)-1/(2*A+11)+1/(2*A+13)-1/(2*A+15)+1/(2*A+17)-1/(2*A+19)+1/(2*A+21)-1/(2*A+23)+1/(2*A+25)-1/(2*A+27)+1/(2*A+29)-1/(2*A+31)+1/(2*A+33)-1/(2*A+35)+1/(2*A+37)-1/(2*A+39)+1/(2*A+41)-1/(2*A+43)+1/(2*A+45)-1/(2*A+47)+1/(2*A+49)-1/(2*A+51)+1/(2*A+53)-1/(2*A+55)+1/(2*A+57)-1/(2*A+59)+1/(2*A+61)-1/(2*A+63)+ME(ME;A+32;B)));
+SUB(SUB;B10;C10))
+```
+So, only ~ 30 chunks are needed.  
+Actually ~ 300, since the increase of speed allows calculating for n = 100,000,000 (8 zeros).
+
+If we hard-code the chunk limits, there is apparently a small increase of speed, but nothing significant.
 
 ### Excel by array formulas
 
