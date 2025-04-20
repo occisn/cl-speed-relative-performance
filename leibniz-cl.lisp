@@ -93,6 +93,7 @@
         (format t "Result: ~,20f in ~f seconds~%" tmp duration))))
   nil)
 
+;; attempt of small optimization with integer calculations, but not quicker
 (defun leibniz-5-bis (&optional (n *n10*))
   "Calculate an approximation of π using Leibniz formula."
   (declare (optimize (speed 3) (safety 0) (debug 0))

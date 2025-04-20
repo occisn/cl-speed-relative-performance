@@ -24,7 +24,12 @@ More precisely, compared languages will be:
 
 ## Table of contents
 
-**[Leibniz formula](#leibniz-formula)** : [synthesis](#synthesis), [C](#c), [Common Lisp SBCL](#common-lisp-sbcl), [Emacs Lisp](#emacs-lisp), [Excel](#excel)
+**[Leibniz formula](#leibniz-formula)** :  
+[Synthesis](#synthesis)  
+[C](#c)  
+[Common Lisp SBCL](#common-lisp-sbcl)  
+[Emacs Lisp](#emacs-lisp)  
+Excel : [VBA](#excel-by-VBA), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)
 
 ## Leibniz formula
 
@@ -43,12 +48,12 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization, Common Lisp S
 | **SBCL**, basic                                  | **3.14159265**258805040000 [3] | 177 s [3]          | leibniz 2     |
 | **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 10.0 s             | leibniz 5     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s** [4]      | leibniz 6     |
-| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 996 s [1]          | leibniz A 2   |
-| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 343 s [1]          | leibniz B 2   |
-| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 332 s [1]          | leibniz C 2   |
-| **Excel** VBA                                    | **3.14159265**458790000000 [3] | 300 s [3]          |               |
-| **Excel** recursion (all cores)                  | **3.141592**75358981000000 [1] | 1300 s [1]         |               |
-| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [2] | 240 s [2]          |               |
+| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 9960 s [1]         | leibniz A 2   |
+| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 3430 s [1]         | leibniz B 2   |
+| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 3320 s [1]         | leibniz C 2   |
+| **Excel** VBA                                    | **3.14159265**458790000000 [3] | 286 s [3]          |               |
+| **Excel** recursion (all cores)                  | **3.141592**75358981000000 [1] | 3500 s [1]         | recursion 2   |
+| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [2] | 2464 s [2]         |               |
 
 
 [1] extrapolated from n = 10,000,000 (7 zeros)  
@@ -84,7 +89,7 @@ Basic function is:
 
 ``` lisp
 (defun leibniz ()
-  "Calculate an approximation of π using Leibniz formula."
+  "Calculate an approximation of pi using Leibniz formula."
   (let ((tmp 0.0d0)
         (sign 1.0d0))
     (dotimes (i *n8*)
@@ -97,8 +102,6 @@ It is accelerated within leibniz-5 function by type declarations, (speed 3) and 
 
 
 ### Emacs Lisp
-
-native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing gcc 13.20 (within msys64)
 
 Basic function is:
 
@@ -121,8 +124,9 @@ It is slightly accelerated by the use of `cl-evenp` function:
 
 Then by byte-compilation and native-compilation.
 
+Native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing gcc 13.20 (within msys64)
 
-### Excel
+### Excel by VBA
 
 **File A** = **VBA**
 
@@ -140,12 +144,22 @@ Function Leibniz(n As Long) As Double
     Leibniz = 4 * tmp
 End Function
 ```
+### Excel by spreadsheet
 
-**File B** = 1000x1000 table in spreadsheet  
-only 1000000 (6 zeros) but already 16 Mo
+File B proposes a 100 x 100 = 10,000 (4 zeros) table in a spreadsheet.
 
-**File C** = **recursion**
+The same file with a 1,000 x 1,000 = 1,000,000 (6 zeros) table would weight around 16 Mo.
 
-**File D** = **array formulas**
+### Excel by recursion
+
+File C, version 1, divises 0 - 10,000,000 (7 zeros) in 3054 chunks of 3275 range (Excel recursion max depth), then uses recursion on each chunk.
+
+Version 2 performs the same, but chunks limits are hard-coded: it improves speed from 13s to 3.5s.
+
+### Excel by array formulas
+
+File D, version 1, divises 0 - 100,000,000 (8 zeros) range in 96 chunks of 1,048,576 range (Excel sequence max size), then uses array formulas on each chunk.
+
+Version 2 performs the same, but chunks limits are hard-coded: it does not improve speed.
 
 (end of README)
