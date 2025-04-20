@@ -22,7 +22,7 @@ More precisely, compared languages will be:
 [C](#c)  
 [Common Lisp SBCL](#common-lisp-sbcl)  
 [Emacs Lisp](#emacs-lisp)  
-Excel : [VBA](#excel-by-VBA), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)
+Excel : [VBA](#excel-by-vba), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)
 
 ## Leibniz formula
 
@@ -48,7 +48,7 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 | **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 3430 s [1]         | leibniz B 2   |
 | **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 3320 s [1]         | leibniz C 2   |
 | **Emacs Lisp** calling C                         | ???                            | ???                |               |
-| **Excel** VBA                                    | **3.14159265**458790000000 [3] | 286 s [3]          |               |
+| **Excel** VBA                                    | **3,1415926**4457277000000 [3] | 125 s [3]          | VBA 3         |
 | **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [2] | 1043 s [2]         | recursion 2   |
 | **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [2] | 2464 s [2]         |               |
 | **Excel** calling C                              | ???                            | ???                |               |
@@ -129,8 +129,7 @@ Native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing g
 
 ### Excel by VBA
 
-See file A.
-
+Basic function is in VBA 1 file:
 ``` VBA
 Function Leibniz(n As Long) As Double
     Dim tmp As Double
@@ -145,6 +144,34 @@ Function Leibniz(n As Long) As Double
     Leibniz = 4 * tmp
 End Function
 ```
+
+It can be accelerated by almost a factor 2 by grouping terms (see VBA 2):
+``` VBA
+Function Leibniz(n As Long) As Double
+    Dim tmp As Double
+    Dim i As Long
+    tmp = 0
+    For i = 0 To (n - 1) Step 2
+        tmp = tmp + 1 / (2 * i + 1) - 1 / (2 * i + 3)
+    Next i
+    Leibniz = 4 * tmp
+End Function
+```
+
+Let's use # to indicate Double literals, avoiding implicit type conversions. See VBA 3:
+``` VBA
+Function Leibniz(n As Long) As Double
+    Dim tmp As Double
+    Dim i As Long
+    tmp = 0#
+    For i = 0 To (n - 1) Step 2
+        tmp = tmp + 1# / (2# * i + 1#) - 1 / (2# * i + 3#)
+    Next i
+    Leibniz = 4# * tmp
+End Function
+```
+
+In VBA 4, we try to divide 1-1000000000 (9 zeros) range into chunks, but this does not increase speed (no parallelism in such situation).
 
 ### Excel by spreadsheet
 
