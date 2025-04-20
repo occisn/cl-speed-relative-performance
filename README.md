@@ -57,6 +57,8 @@ For n = 10000000000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL
 
 ### C
 
+gcc version: 13.2.0
+
 Basic function is:
 ``` C
 int leibniz_3() {
@@ -75,6 +77,8 @@ int leibniz_3() {
 
 ### Common Lisp SBCL
 
+SBCL version: 2.4.10
+
 Basic function is:
 
 ``` lisp
@@ -91,6 +95,8 @@ Basic function is:
 Several optimizations are proposed, including type declaration and full use of SBCL compiler.
 
 ### Emacs Lisp
+
+native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing gcc 13.20 (within msys64)
 
 Basic function is:
 
