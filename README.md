@@ -41,8 +41,8 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization, Common Lisp S
 | **C**, -O3, basic                                | **3.141592653**68834583754     | 10.0 s             | leibniz 3     |
 | **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
 | **SBCL**, basic                                  | **3.14159265**258805040000 [3] | 177 s [3]          | leibniz 2     |
-| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 12.6 s             | leibniz 4     |
-| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s** [4]      | leibniz 5     |
+| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 10.0 s             | leibniz 5     |
+| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s** [4]      | leibniz 6     |
 | **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 996 s [1]          | leibniz A 2   |
 | **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 343 s [1]          | leibniz B 2   |
 | **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 332 s [1]          | leibniz C 2   |
@@ -93,7 +93,8 @@ Basic function is:
     (* 4 tmp)))
 ```
 
-Several optimizations are proposed, including type declaration and full use of SBCL compiler.
+It is accelerated within leibniz-5 function by type declarations, (speed 3) and the use of `evenp`.
+
 
 ### Emacs Lisp
 

@@ -225,3 +225,25 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
 }
 
 // end
+
+// leibniz 5, 10 zeros, with 4-loop unrolling & *basic* //
+// Result: 3.14159265348820548880
+// Duration: 2.778112 seconds
+// -
+// leibniz 6, 10 zeros with 16-loop unrolling & *basic* //
+// Result: 3.14159265348820504471
+// Duration: 2.763508 seconds
+// 2.891 secs
+// ==> idem
+// -
+// leibniz 7, 10 zeros, SIMD vectorization with 8-array for float precision, but no parallelization
+// Result: 3.07681369781494140625 *bug ou problème de précision ?*
+// Duration: 7.569037 seconds
+// -
+// leibniz 8, 10 zeros, SIMD vectorization with 4-array for double precision, but no parallelization
+// Result: 3.14159265349117866606
+// Duration: 4.996684 seconds
+// - 
+// leibniz 9, 10 zeros, SIMD vectorization with 4-array for double precision, and *basic* parallelization
+// Result: 3.14159265349093397290
+// Duration: 1.378506 seconds
