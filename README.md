@@ -2,7 +2,7 @@
 
 Hobby project to compare execution speed between several languages, namely C, Common Lisp, Emacs Lisp and... Excel.
 
-**WORK IN PROGRESS - NOT STABILIZED YET**
+**WORK IN PROGRESS**
 
 One of the objectives is to see to which extent Common Lisp could be as fast as C.
 
@@ -39,7 +39,7 @@ As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/
 
 Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
-For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL is as quick as C:
+For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage, **Common Lisp SBCL is as quick as C**:
 
 | Language                                         | Results                        | Execution duration | Function name |
 |--------------------------------------------------|--------------------------------|--------------------|---------------|
@@ -47,7 +47,7 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization, Common Lisp S
 | **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
 | **SBCL**, basic                                  | **3.14159265**258805040000 [3] | 177 s [3]          | leibniz 2     |
 | **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 10.0 s             | leibniz 5     |
-| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s** [4]      | leibniz 6     |
+| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
 | **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 9960 s [1]         | leibniz A 2   |
 | **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 3430 s [1]         | leibniz B 2   |
 | **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 3320 s [1]         | leibniz C 2   |
@@ -59,7 +59,6 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization, Common Lisp S
 [1] extrapolated from n = 10,000,000 (7 zeros)  
 [2] extrapolated from n = 100,000,000 (8 zeros)  
 [3] extrapolated from n = 1,000,000,000 (9 zeros)  
-[4] 8- and 16-loop unrolling do not yield quicker results
 
 ### C
 
@@ -100,6 +99,11 @@ Basic function is:
 
 It is accelerated within leibniz-5 function by type declarations, (speed 3) and the use of `evenp`.
 
+leibniz-5-bis: play on integer calculation, but not quicker
+
+leibniz-6: introduction of 4-loop unrolling
+
+8- and 16-loop unrolling do not yield quicker results
 
 ### Emacs Lisp
 
@@ -128,7 +132,7 @@ Native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing g
 
 ### Excel by VBA
 
-**File A** = **VBA**
+See file A.
 
 ``` VBA
 Function Leibniz(n As Long) As Double
@@ -144,6 +148,7 @@ Function Leibniz(n As Long) As Double
     Leibniz = 4 * tmp
 End Function
 ```
+
 ### Excel by spreadsheet
 
 File B proposes a 100 x 100 = 10,000 (4 zeros) table in a spreadsheet.
@@ -160,6 +165,6 @@ Version 2 performs the same, but chunks limits are hard-coded: it improves speed
 
 File D, version 1, divises 0 - 100,000,000 (8 zeros) range in 96 chunks of 1,048,576 range (Excel sequence max size), then uses array formulas on each chunk.
 
-Version 2 performs the same, but chunks limits are hard-coded: it does not improve speed.
+Version 2 performs the same, but chunks limits are hard-coded: it does *not* improve speed.
 
 (end of README)
