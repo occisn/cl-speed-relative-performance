@@ -18,7 +18,7 @@
   (let ((start-time (current-time))
         (tmp 0.0))
     (dotimes (i n)
-      (setq tmp (+ tmp (/ (if (evenp i) 1.0 -1.0) (float (+ (* 2 i) 1))))))
+      (setq tmp (+ tmp (/ (if (cl-evenp i) 1.0 -1.0) (float (+ (* 2 i) 1))))))
     (setq tmp (* 4 tmp))
     (let* ((end-time (current-time))
            (duration (float-time (time-subtract end-time start-time))))

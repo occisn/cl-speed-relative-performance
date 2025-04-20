@@ -4,4 +4,7 @@
 *.exe
 *.elc
 *.eln
+*.eln.old
+leibniz-excel-B-spreadsheet-5zeros.xlsm
+leibniz-excel-B-spreadsheet-6zeros.xlsm
 

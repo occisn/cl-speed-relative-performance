@@ -18,7 +18,8 @@ More precisely, compared languages will be:
 - Emacs Lisp with native compilation  
 - Emacs Lisp calling C with FFI  
 - Excel VBA  
-- Excel formulas.
+- Excel formulas  
+- Excel calling C
 
 
 ## Table of contents
@@ -33,26 +34,26 @@ As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/
 
 Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
-For n = 10000000000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL is as quick as C:
+For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization, Common Lisp SBCL is as quick as C:
 
-| Language                                         | Results                    | Execution duration | Function name |
-|--------------------------------------------------|----------------------------|--------------------|---------------|
-| **C**, -O3, basic                                | **3.141592653**68834583754 | 10.0 s             | leibniz 3     |
-| **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099 | 10.0 s             | leibniz 4     |
-| **SBCL**, basic                                  |                            | 177 s [3]          | leibniz 2     |
-| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000 | 12.6 s             | leibniz 4     |
-| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000 | 9.7 s [4]          | leibniz 5     |
-| **Emacs Lisp**, interpreted                      |                            | 996 s [1]          | leibniz A 2   |
-| **Emacs Lisp**, byte-compiled                    |                            | 343 s [1]          | leibniz B 2   |
-| **Emacs Lisp**, native-compiled                  |                            | 332 s [1]          | leibniz C 2   |
-| **Excel** VBA                                    |                            | 300 s [3]          |               |
-| **Excel*** recursion (all cores)                 |                            | 1300 s [1]         |               |
-| **Excel** arrays formulas (all cores)            |                            | 240 s [2]          |               |
+| Language                                         | Results                        | Execution duration | Function name |
+|--------------------------------------------------|--------------------------------|--------------------|---------------|
+| **C**, -O3, basic                                | **3.141592653**68834583754     | 10.0 s             | leibniz 3     |
+| **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
+| **SBCL**, basic                                  | **3.14159265**258805040000 [3] | 177 s [3]          | leibniz 2     |
+| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 12.6 s             | leibniz 4     |
+| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s** [4]      | leibniz 5     |
+| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 996 s [1]          | leibniz A 2   |
+| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 343 s [1]          | leibniz B 2   |
+| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 332 s [1]          | leibniz C 2   |
+| **Excel** VBA                                    | **3.14159265**458790000000 [3] | 300 s [3]          |               |
+| **Excel** recursion (all cores)                  | **3.141592**75358981000000 [1] | 1300 s [1]         |               |
+| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [2] | 240 s [2]          |               |
 
 
-[1] extrapolated from n = 10000000 (7 zeros)  
-[2] extrapolated from n = 100000000 (8 zeros)  
-[3] extrapolated from n = 1000000000 (9 zeros)  
+[1] extrapolated from n = 10,000,000 (7 zeros)  
+[2] extrapolated from n = 100,000,000 (8 zeros)  
+[3] extrapolated from n = 1,000,000,000 (9 zeros)  
 [4] 8- and 16-loop unrolling do not yield quicker results
 
 ### C
@@ -103,12 +104,22 @@ Basic function is:
 ``` elisp
 (defun leibniz (n)
   "Calculate an approximation of π using Leibniz formula with N terms."
-  (let ((tmp 0.0))
+  (let ((tmp 0.0)
+        (sign 1.0))
     (dotimes (i n)
-      (setq tmp (+ tmp (/ (if (cl-evenp i) 1.0 -1.0) (float (+ (* 2 i) 1))))))
+      (setq tmp (+ tmp (/ sign (float (+ (* 2 i) 1)))))
+      (setq sign (- sign)))
     (setq tmp (* 4 tmp))
-    (message "Result: %.20f" tmp)))
+    (message "Result: %.20f" tmp))
 ```
+
+It is slightly accelerated by the use of `cl-evenp` function:
+```elisp
+(setq tmp (+ tmp (/ (if (cl-evenp i) 1.0 -1.0) (float (+ (* 2 i) 1)))))
+```
+
+Then by byte-compilation and native-compilation.
+
 
 ### Excel
 
