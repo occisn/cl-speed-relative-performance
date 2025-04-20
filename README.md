@@ -44,9 +44,9 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
 | **SBCL** with parallelism                        | ???                            | ???                |               |
 | **SBCL** calling C                               | ???                            | ???                |               |
-| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 9960 s [1]         | leibniz A 2   |
-| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 3430 s [1]         | leibniz B 2   |
-| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 3320 s [1]         | leibniz C 2   |
+| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 4300 s [1]         | leibniz A 3   |
+| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 2920 s [1]         | leibniz B 3   |
+| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 2870 s [1]         | leibniz C 3   |
 | **Emacs Lisp** calling C                         | ???                            | ???                |               |
 | **Excel** VBA                                    | **3,1415926**4457277000000 [3] | 125 s [3]          | VBA 3         |
 | **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [2] | 1043 s [2]         | recursion 2   |
@@ -108,7 +108,7 @@ Basic function is:
 
 ``` elisp
 (defun leibniz (n)
-  "Calculate an approximation of π using Leibniz formula with N terms."
+  "Calculate an approximation of pi using Leibniz formula with N terms."
   (let ((tmp 0.0)
         (sign 1.0))
     (dotimes (i n)
@@ -123,7 +123,23 @@ It is slightly accelerated by the use of `cl-evenp` function:
 (setq tmp (+ tmp (/ (if (cl-evenp i) 1.0 -1.0) (float (+ (* 2 i) 1)))))
 ```
 
+And even more by grouping terms by 2:
+``` elisp
+(defun leibniz (n)
+  "Calculate an approximation of pi using Leibniz formula with N terms."
+  (let ((tmp 0.0)
+        (i 0))
+    (while (<= i (- n 1))
+      (setq tmp (+ tmp (/ 1.0 (float (+ (* 2 i) 1))))
+            tmp (- tmp (/ 1.0 (float (+ (* 2 i) 3))))
+            i (+ i 2)))
+    (setq tmp (* 4 tmp))
+    (message "Result: %.20f" tmp)))
+```
+
 Then by byte-compilation and native-compilation.
+
+To be noted: native compilation does not bring a significant speed increase.
 
 Native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing gcc 13.20 (within msys64)
 
