@@ -154,7 +154,7 @@ The same file with a 1,000 x 1,000 = 1,000,000 (6 zeros) table would weight arou
 
 ### Excel by recursion
 
-File C, version 1, divises 0 - 10,000,000 (7 zeros) in 3054 chunks of 3275 range (Excel recursion max depth), then uses recursion on each chunk.
+File C, version 1, divises 0 - 10,000,000 (7 zeros) in 3054 chunks of 3275 range (Excel recursion maximum depth with 2 parameters), then uses recursion on each chunk.
 
 Typical formula is:
 ``` Excel
