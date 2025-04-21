@@ -52,9 +52,9 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 | **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [2] | 2920 s [2]         | leibniz B 3   |
 | **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [2] | 2870 s [2]         | leibniz C 3   |
 | **Emacs Lisp** calling C                         | ???                            | ???                |               |
-| **Excel** VBA                                    | **3,1415926**4457277000000 [4] | 125 s [4]          | VBA 3         |
-| **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [3] | 1043 s [3]         | recursion 2   |
-| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [3] | 2200 s [3]         |               |
+| **Excel**, VBA                                   | **3,1415926**4457277000000 [4] | 125 s [4]          | VBA 3         |
+| **Excel**, recursion (all cores)                 | **3,1415926**4053770000000 [3] | 1100 s [3]         | recursion 2   |
+| **Excel**, arrays formulas (all cores)           | **3.141592**55822236000000 [3] | 2200 s [3]         | version 3     |
 | **Excel** calling C                              | ???                            | ???                |               |
 | **GNU Emacs Calc** on stack                      | **3.141**49267357 [0]          | 10,000,000 s [0]   |               |
 | **GNU Emacs Calc** with algbraic expression      | **3.14159**165356 [1]          | 210,000 s [1]      |               |
@@ -208,25 +208,37 @@ The same file with a 1,000 x 1,000 = 1,000,000 (6 zeros) table would weight arou
 
 #### 1.5.3. Excel by recursion
 
-File C, version 1, divises 0 - 10,000,000 (7 zeros) in 3054 chunks of 3275 range (Excel recursion maximum depth with 2 parameters), then uses recursion on each chunk.
+File C, version 1, divises 0 - 10,000,000 (7 zeros) in 2443 chunks of 4094 range (Excel recursion maximum depth with 1 parameter), then uses recursion on each chunk.
 
 Typical formula is:
 ``` Excel
-=LET(
-SUB;LAMBDA(ME;A;B;SI(B<A;0;(-1)^B/(2*B+1)+ME(ME;A;B-1)));
-SUB(SUB;B10;C10))
+=LET(NMIN; B10;
+     NMAX; NMIN+4094-1;
+     SUB;LAMBDA(ME;N;IF(N<NMIN;0;(-1)^N/(2*N+1)+ME(ME;N-1)));
+     SUB(SUB;NMAX))
 ```
 
 Version 2 performs the same, but chunks are 32 times larger, since each formula computes 32 terms of the sum:
 ``` Excel
-=LET(
-SUB;LAMBDA(ME;A;B;SI(A+31>B;0;1/(2*A+1)-1/(2*A+3)+1/(2*A+5)-1/(2*A+7)+1/(2*A+9)-1/(2*A+11)+1/(2*A+13)-1/(2*A+15)+1/(2*A+17)-1/(2*A+19)+1/(2*A+21)-1/(2*A+23)+1/(2*A+25)-1/(2*A+27)+1/(2*A+29)-1/(2*A+31)+1/(2*A+33)-1/(2*A+35)+1/(2*A+37)-1/(2*A+39)+1/(2*A+41)-1/(2*A+43)+1/(2*A+45)-1/(2*A+47)+1/(2*A+49)-1/(2*A+51)+1/(2*A+53)-1/(2*A+55)+1/(2*A+57)-1/(2*A+59)+1/(2*A+61)-1/(2*A+63)+ME(ME;A+32;B)));
-SUB(SUB;B10;C10))
+=LET(NMIN; B10;
+     NMAX; NMIN+4094*32;
+     SUB; LAMBDA(ME;N;IF(N+31>NMAX;0;1/(2*N+1)-1/(2*N+3)+1/(2*N+5)-1/(2*N+7)+1/(2*N+9)-1/(2*N+11)+1/(2*N+13)-1/(2*N+15)+1/(2*N+17)-1/(2*N+19)+1/(2*N+21)-1/(2*N+23)+1/(2*N+25)-1/(2*N+27)+1/(2*N+29)-1/(2*N+31)+1/(2*N+33)-1/(2*N+35)+1/(2*N+37)-1/(2*N+39)+1/(2*N+41)-1/(2*N+43)+1/(2*N+45)-1/(2*N+47)+1/(2*N+49)-1/(2*N+51)+1/(2*N+53)-1/(2*N+55)+1/(2*N+57)-1/(2*N+59)+1/(2*N+61)-1/(2*N+63)+ME(ME;N+32)));
+     SUB(SUB;NMIN))
 ```
-So, only ~ 30 chunks are needed.  
-Actually ~ 300, since the increase of speed allows calculating for n = 100,000,000 (8 zeros).
+So, only ~ 76 chunks are needed.  
+Actually ~ 764, since the increase of speed allows calculating for n = 100,000,000 (8 zeros).
 
 If we hard-code the chunk limits, there is apparently a small increase of speed, but nothing significant.
+
+In version 3, we try an one-liner:
+```
+=4*SOMME(MAP(
+SEQUENCE(764;1;0;32*4094);
+LAMBDA(NMIN;
+LET(NMAX;NMIN+(4094-1)*32;
+SUB ; LAMBDA(ME;N;IF(N+31>NMAX;0;1/(2*N+1)-1/(2*N+3)+1/(2*N+5)-1/(2*N+7)+1/(2*N+9)-1/(2*N+11)+1/(2*N+13)-1/(2*N+15)+1/(2*N+17)-1/(2*N+19)+1/(2*N+21)-1/(2*N+23)+1/(2*N+25)-1/(2*N+27)+1/(2*N+29)-1/(2*N+31)+1/(2*N+33)-1/(2*N+35)+1/(2*N+37)-1/(2*N+39)+1/(2*N+41)-1/(2*N+43)+1/(2*N+45)-1/(2*N+47)+1/(2*N+49)-1/(2*N+51)+1/(2*N+53)-1/(2*N+55)+1/(2*N+57)-1/(2*N+59)+1/(2*N+61)-1/(2*N+63)+ME(ME;N+32)));
+SUB(SUB;NMIN)))))
+```
 
 #### 1.5.4. Excel by array formulas
 
