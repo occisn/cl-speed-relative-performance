@@ -17,22 +17,22 @@ More precisely, compared languages will be:
 
 ## Table of contents
 
-**[Leibniz formula](#leibniz-formula)** :  
-- [Synthesis](#synthesis)  
-- [C](#c)  
-- [Common Lisp SBCL](#common-lisp-sbcl)  
-- [Emacs Lisp](#emacs-lisp)  
-- Excel : [VBA](#excel-by-vba), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)  
-- [GNU Emacs Calc](#gnu-emacs-calc)
+**[1. Leibniz formula](#leibniz-formula)** :  
+- [1.1. Synthesis](#synthesis)  
+- [1.2. C](#c)  
+- [1.3. Common Lisp SBCL](#common-lisp-sbcl)  
+- [1.4. Emacs Lisp](#emacs-lisp)  
+- [1.5. Excel](#excel): [VBA](#excel-by-vba), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)  
+- [1.6. GNU Emacs Calc](#gnu-emacs-calc)
 
-**[Butterfly](#butterfly)** :  
+**[2. Butterfly](#butterfly)** :  
 (later)
 
-## Leibniz formula
+## 1. Leibniz formula
 
 As Niklas Heer dit it for its [speed comparison](https://github.com/niklas-heer/speed-comparison) of programming language, we will use [Leibniz formula](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) n times to calculate an approximate value of pi.
 
-### Synthesis
+### 1.1. Synthesis
 
 Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
@@ -66,7 +66,7 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 [3] extrapolated from n = 100,000,000 (8 zeros)  
 [4] extrapolated from n = 1,000,000,000 (9 zeros)  
 
-### C
+### 1.2. C
 
 gcc version: 13.2.0
 
@@ -86,7 +86,7 @@ int leibniz_3() {
 }
 ```
 
-### Common Lisp SBCL
+### 1.3. Common Lisp SBCL
 
 SBCL version: 2.4.10
 
@@ -111,7 +111,7 @@ leibniz-6: introduction of 4-loop unrolling
 
 8- and 16-loop unrolling do not yield quicker results
 
-### Emacs Lisp
+### 1.4. Emacs Lisp
 
 Basic function is:
 
@@ -152,7 +152,9 @@ To be noted: native compilation does not bring a significant speed increase.
 
 Native compilation: libccjit.dll provided by msys2 version 3.5.7-4, containing gcc 13.20 (within msys64)
 
-### Excel by VBA
+### 1.5. Excel
+
+#### 1.5.1. Excel by VBA
 
 Basic function is in VBA 1 file:
 ``` VBA
@@ -198,13 +200,13 @@ End Function
 
 In VBA 4, we try to divide 1-1000000000 (9 zeros) range into chunks, but this does not increase speed (no parallelism in such situation).
 
-### Excel by spreadsheet
+#### 1.5.2. Excel by spreadsheet
 
 File B proposes a 100 x 100 = 10,000 (4 zeros) table in a spreadsheet.
 
 The same file with a 1,000 x 1,000 = 1,000,000 (6 zeros) table would weight around 16 Mo.
 
-### Excel by recursion
+#### 1.5.3. Excel by recursion
 
 File C, version 1, divises 0 - 10,000,000 (7 zeros) in 3054 chunks of 3275 range (Excel recursion maximum depth with 2 parameters), then uses recursion on each chunk.
 
@@ -226,13 +228,13 @@ Actually ~ 300, since the increase of speed allows calculating for n = 100,000,0
 
 If we hard-code the chunk limits, there is apparently a small increase of speed, but nothing significant.
 
-### Excel by array formulas
+#### 1.5.4. Excel by array formulas
 
 File D, version 1, divises 0 - 100,000,000 (8 zeros) range in 96 chunks of 1,048,576 range (Excel sequence max size), then uses array formulas on each chunk.
 
 Version 2 performs the same, but chunks limits are hard-coded: it does *not* improve speed.
 
-### Gnu Emacs Calc
+### 1.6. GNU Emacs Calc
 
 In each version, terms are grouped by two.
 
@@ -251,8 +253,9 @@ Algebraic versions:
 '4*sum(1/((2*(2*k))+1)-1/((2*(2*k+1))+1), k, 0, 1000000/2) RET
 ```
 
+GNU Emacs version: 29.4
 
-## Butterfly
+## 2. Butterfly
 
 (later)
 
