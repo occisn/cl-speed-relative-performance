@@ -54,7 +54,7 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 | **Emacs Lisp** calling C                         | ???                            | ???                |               |
 | **Excel** VBA                                    | **3,1415926**4457277000000 [4] | 125 s [4]          | VBA 3         |
 | **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [3] | 1043 s [3]         | recursion 2   |
-| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [3] | 2464 s [3]         |               |
+| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [3] | 2200 s [3]         |               |
 | **Excel** calling C                              | ???                            | ???                |               |
 | **GNU Emacs Calc** on stack                      | **3.141**49267357 [0]          | 10,000,000 s [0]   |               |
 | **GNU Emacs Calc** with algbraic expression      | **3.14159**165356 [1]          | 210,000 s [1]      |               |
@@ -230,9 +230,39 @@ If we hard-code the chunk limits, there is apparently a small increase of speed,
 
 #### 1.5.4. Excel by array formulas
 
-File D, version 1, divises 0 - 100,000,000 (8 zeros) range in 96 chunks of 1,048,576 range (Excel sequence max size), then uses array formulas on each chunk.
+File D, version 1, divises 0 - 100,000,000 (8 zeros) range in 96 chunks of 1,048,576 range (Excel sequence max size), then uses the following array formulas on each chunk:
+```
+=SUM(MAP(SEQUENCE(C11-B11+1;1;B11); LAMBDA(M;(-1)^M/(2*M+1))))
+```
 
-Version 2 performs the same, but chunks limits are hard-coded: it does *not* improve speed.
+Version 2 replaces `(-1)^M` by a conditional on `M` evenness:
+```
+=SUM(MAP(SEQUENCE(C11-B11+1;1;B11); LAMBDA(M;IF(MOD(M;2)=0;1/(2*M+1);-1/(2*M+1)))))
+```
+
+It does not really increase speed.
+
+Version 3 takes advantage of Excel built-in functions working on sequences:
+```
+= LET(
+  M; SEQUENCE(C11-B11+1;1;B11);
+  SUM( (-1)^M / (2*M + 1)))
+```
+
+It slightly increases speed.
+
+Note: hard-coding chunks limits does *not* improve speed.
+
+
+Version 4 proposes an one-liner:
+```
+= 4 * SOMME( MAP( SEQUENCE(96;1;0;1048576);
+          LAMBDA(NMIN; LET(NMAX;NMIN+1048576-1;
+                 M; SEQUENCE(NMAX-NMIN+1;1;NMIN);
+                    SOMME( (-1)^M / (2*M + 1))))))
+```
+
+The execution is a bit longer.
 
 ### 1.6. GNU Emacs Calc
 
