@@ -13,16 +13,20 @@ More precisely, compared languages will be:
 - Common Lisp: single-threaded, with parallelism, calling C with CFFI  
 - Emacs Lisp: interpreted, byte-compiled, native-compiled, calling C with FFI  
 - Excel: VBA, recursion, array formulas, calling C  
-- (for fun) perhaps Gnu Calc
+- (for fun) Gnu Emacs Calc
 
 ## Table of contents
 
 **[Leibniz formula](#leibniz-formula)** :  
-[Synthesis](#synthesis)  
-[C](#c)  
-[Common Lisp SBCL](#common-lisp-sbcl)  
-[Emacs Lisp](#emacs-lisp)  
-Excel : [VBA](#excel-by-vba), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)
+- [Synthesis](#synthesis)  
+- [C](#c)  
+- [Common Lisp SBCL](#common-lisp-sbcl)  
+- [Emacs Lisp](#emacs-lisp)  
+- Excel : [VBA](#excel-by-vba), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)  
+- [GNU Emacs Calc](#gnu-emacs-calc)
+
+**[Butterfly](#butterfly)** :  
+(later)
 
 ## Leibniz formula
 
@@ -39,23 +43,28 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 | **C**, -O3, basic                                | **3.141592653**68834583754     | 10.0 s             | leibniz 3     |
 | **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
 | **C** with parallelism                           | ???                            | ???                |               |
-| **SBCL**, basic                                  | **3.14159265**258805040000 [3] | 177 s [3]          | leibniz 2     |
+| **SBCL**, basic                                  | **3.14159265**258805040000 [4] | 177 s [4]          | leibniz 2     |
 | **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 10.0 s             | leibniz 5     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
 | **SBCL** with parallelism                        | ???                            | ???                |               |
 | **SBCL** calling C                               | ???                            | ???                |               |
-| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [1] | 4300 s [1]         | leibniz A 3   |
-| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [1] | 2920 s [1]         | leibniz B 3   |
-| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [1] | 2870 s [1]         | leibniz C 3   |
+| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [2] | 4300 s [2]         | leibniz A 3   |
+| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [2] | 2920 s [2]         | leibniz B 3   |
+| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [2] | 2870 s [2]         | leibniz C 3   |
 | **Emacs Lisp** calling C                         | ???                            | ???                |               |
-| **Excel** VBA                                    | **3,1415926**4457277000000 [3] | 125 s [3]          | VBA 3         |
-| **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [2] | 1043 s [2]         | recursion 2   |
-| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [2] | 2464 s [2]         |               |
+| **Excel** VBA                                    | **3,1415926**4457277000000 [4] | 125 s [4]          | VBA 3         |
+| **Excel** recursion (all cores)                  | **3.1415926**3880205000000 [3] | 1043 s [3]         | recursion 2   |
+| **Excel** arrays formulas (all cores)            | **3.141592**55822236000000 [3] | 2464 s [3]         |               |
 | **Excel** calling C                              | ???                            | ???                |               |
+| **GNU Emacs Calc** on stack                      | **3.141**49267357 [0]          | 10,000,000 s [0]   |               |
+| **GNU Emacs Calc** with algbraic expression      | **3.14159**165356 [1]          | 210,000 s [1]      |               |
 
-[1] extrapolated from n = 10,000,000 (7 zeros)  
-[2] extrapolated from n = 100,000,000 (8 zeros)  
-[3] extrapolated from n = 1,000,000,000 (9 zeros)  
+
+[0] extrapolated from n = 10,000 (4 zeros)  
+[1] extrapolated from n = 1,000,000 (6 zeros)  
+[2] extrapolated from n = 10,000,000 (7 zeros)  
+[3] extrapolated from n = 100,000,000 (8 zeros)  
+[4] extrapolated from n = 1,000,000,000 (9 zeros)  
 
 ### C
 
@@ -222,5 +231,29 @@ If we hard-code the chunk limits, there is apparently a small increase of speed,
 File D, version 1, divises 0 - 100,000,000 (8 zeros) range in 96 chunks of 1,048,576 range (Excel sequence max size), then uses array formulas on each chunk.
 
 Version 2 performs the same, but chunks limits are hard-coded: it does *not* improve speed.
+
+### Gnu Emacs Calc
+
+In each version, terms are grouped by two.
+
+Stack version:
+```
+0 SPC 0 SPC 10000 Z( RET 2 * 1 + & TAB 2 * 3 + & - + 2 Z) 4 *
+```
+
+Algebraic versions:
+
+```
+'(1/((2*(2*k))+1)-1/((2*(2*k+1))+1)) RET 'k RET 0 SPC 1000000 SPC 2 / a+ RET 4 *
+```
+
+```
+'4*sum(1/((2*(2*k))+1)-1/((2*(2*k+1))+1), k, 0, 1000000/2) RET
+```
+
+
+## Butterfly
+
+(later)
 
 (end of README)
