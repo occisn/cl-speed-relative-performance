@@ -17,15 +17,15 @@ More precisely, compared languages will be:
 
 ## Table of contents
 
-**[1. Leibniz formula](#leibniz-formula)** :  
-- [1.1. Synthesis](#synthesis)  
-- [1.2. C](#c)  
-- [1.3. Common Lisp SBCL](#common-lisp-sbcl)  
-- [1.4. Emacs Lisp](#emacs-lisp)  
-- [1.5. Excel](#excel): [VBA](#excel-by-vba), [spreadsheet](#excel-by-spreadsheet), [recursion](#excel-by-recursion), [array formulas](#excel-by-array-formulas)  
-- [1.6. GNU Emacs Calc](#gnu-emacs-calc)
+**[1. Leibniz formula](#1-leibniz-formula)** :  
+- [1.1. Synthesis](#11-synthesis)  
+- [1.2. C](#12-c)  
+- [1.3. Common Lisp SBCL](#13-common-lisp-sbcl)  
+- [1.4. Emacs Lisp](#14-emacs-lisp)  
+- [1.5. Excel](#15-excel): [VBA](#151-excel-by-vba), [spreadsheet](#152-excel-by-spreadsheet), [recursion](#153-excel-by-recursion), [array formulas](#154-excel-by-array-formulas)  
+- [1.6. GNU Emacs Calc](#16-gnu-emacs-calc)
 
-**[2. Butterfly](#butterfly)** :  
+**[2. Butterfly](#2-butterfly)** :  
 (later)
 
 ## 1. Leibniz formula
