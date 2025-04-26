@@ -1,3 +1,4 @@
+
 (eval-when (:compile-toplevel)
   (ql:quickload :zpng))
 
@@ -328,7 +329,7 @@
 (defun F (x)
   "Return F(x)."
   (declare (type double-float x))
-  (let ((a )
+  (let ((a (- (* 1000.0 x)))
         (b (* 1000.0 (- x 1.0))))
     (declare (type double-float a b))
     (floor
@@ -602,10 +603,61 @@ Algorithm to convert value to HSL then RGB is inspired by: https://stackoverflow
     (draw-heatmap-from-values *height* *width* value-array "H2-heatmap.png")
     (format t "done.~%")))
 
+
+(defun save-bmp-from-rgb-arrays (filename r-array g-array b-array width height)
+  "Save the RGB data from the 2D arrays R-ARRAY, G-ARRAY, B-ARRAY to a BMP file."
+  (let* ((row-bytes (* 3 width))  ; 3 bytes per pixel (RGB)
+         (padding (mod (- 4 (mod row-bytes 4)) 4))  ; Padding to align rows to 4 bytes
+         (row-size (+ row-bytes padding))  ; Total row size with padding
+         (pixel-data-size (* row-size height))  ; Total size for the pixel data
+         (file-size (+ 14 40 pixel-data-size)))  ; Total file size (header + data)
+    (with-open-file (out filename :direction :output :if-exists :supersede
+                        :element-type '(unsigned-byte 8))
+      ;; === BMP FILE HEADER ===
+      (write-byte #x42 out)  ; 'B'
+      (write-byte #x4D out)  ; 'M'
+      (loop for shift in '(0 8 16 24)
+            do (write-byte (ldb (byte 8 shift) file-size) out))  ; File size
+      (loop repeat 4 do (write-byte 0 out))  ; Reserved
+      (loop for shift in '(0 8 16 24)
+            do (write-byte (ldb (byte 8 shift) 54) out))  ; Pixel data offset (54 bytes)
+
+      ;; === DIB HEADER (BITMAPINFOHEADER) ===
+      (loop for shift in '(0 8 16 24)
+            do (write-byte (ldb (byte 8 shift) 40) out))  ; Header size
+      (loop for shift in '(0 8 16 24)
+            do (write-byte (ldb (byte 8 shift) width) out))  ; Width
+      (loop for shift in '(0 8 16 24)
+            do (write-byte (ldb (byte 8 shift) height) out))  ; Height
+      (write-byte 1 out)  ; Planes (1)
+      (write-byte 0 out)  ; Reserved
+      (write-byte 24 out)  ; Bits per pixel (24 bits: RGB)
+      (write-byte 0 out)  ; Compression (0: none)
+      (loop repeat 4 do (write-byte 0 out))  ; More zeroes (unused fields)
+      (loop for shift in '(0 8 16 24)
+            do (write-byte (ldb (byte 8 shift) pixel-data-size) out))  ; Image size
+      (loop repeat 16 do (write-byte 0 out))  ; Unused fields in DIB header
+
+      ;; === PIXEL DATA ===
+      ;; BMP format stores pixels in bottom-up order (reverse row order)
+      (loop for y downfrom (1- height) to 0 do
+           (loop for x from 0 below width do
+                (let ((r (aref r-array y x))  ; Accessing 2D arrays at (y, x)
+                      (g (aref g-array y x))
+                      (b (aref b-array y x)))
+                  ;; BMP format uses BGR order (not RGB)
+                  (write-byte b out)
+                  (write-byte g out)
+                  (write-byte r out)))
+           ;; Padding to ensure row size is a multiple of 4 bytes
+           (loop repeat padding do (write-byte 0 out))))))
+
+
+
 (defun main ()
   "Main function. Create butterfly.png"
   (format t "1) Create RGB arrays...~%")
-  (let ((export-file "butterfly.png")
+  (let ((export-file (merge-pathnames "butterfly-cl.bmp"))
         (r-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0))
         (g-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0))
         (b-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0)))
@@ -613,28 +665,31 @@ Algorithm to convert value to HSL then RGB is inspired by: https://stackoverflow
 
     (format t "2) Calculate RGB components...~%")
     (loop for n of-type fixnum from 1 to *height* do
-      (loop for m of-type fixnum from 1 to *width* do
-        (progn
-          (let* ((x (/ (- m 1000.0d0) 960.0d0))
-                 (y (/ (- 451.0d0 n) 960.0d0))
-                 (r (F (H 0 x y)))
-                 (g (F (H 1 x y)))
-                 (b (F (H 2 x y))))
-            (declare (type double-float x y)
-                     (type fixnum r g b))
-            (setf (aref r-array (- n 1) (- m 1)) r)
-            (setf (aref g-array (- n 1) (- m 1)) g)
-            (setf (aref b-array (- n 1) (- m 1)) b))
-          ;; print some information:
-          (when (and (= 0 (mod m 100)) (or (= 1 n) (= 0 (mod n 100))))
-            (let ((r (aref r-array (- n 1) (- m 1)))
-                  (g (aref g-array (- n 1) (- m 1)))
-                  (b (aref b-array (- n 1) (- m 1))))
-              (declare (type fixnum r g b))
-              (format t "n = ~a ; m = ~a ; RGB = ~a ~a ~a~%" n m r g b))))))
+          (loop for m of-type fixnum from 1 to *width* do
+                (progn
+                  (let* ((x (/ (- m 1000.0d0) 960.0d0))
+                         (y (/ (- 451.0d0 n) 960.0d0))
+                         (r (F (H 0 x y)))
+                         (g (F (H 1 x y)))
+                         (b (F (H 2 x y))))
+                    (declare (type double-float x y)
+                             (type fixnum r g b))
+                    (setf (aref r-array (- n 1) (- m 1)) r)
+                    (setf (aref g-array (- n 1) (- m 1)) g)
+                    (setf (aref b-array (- n 1) (- m 1)) b))
+                  ;; print some information:
+                  (when (and (= 0 (mod m 100)) (or (= 1 n) (= 0 (mod n 100))))
+                    (let ((r (aref r-array (- n 1) (- m 1)))
+                          (g (aref g-array (- n 1) (- m 1)))
+                          (b (aref b-array (- n 1) (- m 1))))
+                      (declare (type fixnum r g b))
+                      (format t "n = ~a ; m = ~a ; RGB = ~a ~a ~a~%" n m r g b))))))
     
     (format t "3) Export pic...~%")
-    (draw-pic-from-rgb-arrays *height* *width* r-array g-array b-array export-file)
+    ;; (draw-pic-from-rgb-arrays *height* *width* r-array g-array b-array export-file)
+    (save-bmp-from-rgb-arrays export-file r-array g-array b-array *width* *height*)
     (format t "Done.~%")))
+
+;;; (butterfly::main)
 
 ;;;; end
