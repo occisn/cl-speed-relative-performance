@@ -40,11 +40,11 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 
 | Language                                         | Results                        | Execution duration | Function name |
 |--------------------------------------------------|--------------------------------|--------------------|---------------|
-| **C**, -O3, basic                                | **3.141592653**68834583754     | 10.0 s             | leibniz 3     |
+| **C**, -O3, basic                                | **3.141592653**68834583754     | **10.0 s**             | leibniz 3     |
 | **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
 | **C** with parallelism                           | ???                            | ???                |               |
 | **SBCL**, basic                                  | **3.14159265**258805040000 [4] | 177 s [4]          | leibniz 2     |
-| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | 10.0 s             | leibniz 5     |
+| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | **10.0 s**             | leibniz 5     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
 | **SBCL** with parallelism                        | ???                            | ???                |               |
 | **SBCL** calling C                               | ???                            | ???                |               |
