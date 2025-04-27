@@ -7,14 +7,17 @@
 #define HEIGHT 1100 // for n
 #define WIDTH 2000 // for m
 
+#define ONE_OVER_TWO 0.5
 #define ONE_OVER_THREE 0.33333333333333333
 #define ONE_OVER_FOUR 0.25
+#define ONE_OVER_EIGHT 0.125
 #define ONE_OVER_TWENTY 0.05
 #define ONE_OVER_TWENTY_FIVE 0.04
 #define TWO_OVER_FIVE 0.4
 #define TWO_OVER_TWENTY_FIVE 0.08
 #define THREE_OVER_FIFTY 0.06
 #define FOUR_OVER_FIVE 0.8
+#define FIVE_OVER_TWO 2.5
 #define SEVEN_OVER_FIVE 1.4
 
 double exp_minus_exp(double x) {
@@ -158,7 +161,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                  + ( 14 * atan(
                                ( 100 * (y + (x * ONE_OVER_FOUR) - ONE_OVER_TWENTY_FIVE) )
                                / ( 1.0 + fabs(100.0 * x - 25.0 * y - 3.0 * atan(100.0 * x - 25.0 * y)) )) )
-                 + ( 14 * fabs((x / 2.0) - (y / 8.0)) )),
+                 + ( 14 * fabs((x * ONE_OVER_TWO) - (y * ONE_OVER_EIGHT)) )),
              4);
 
       // Exy
@@ -183,7 +186,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
         Lxy += pow(sin(( (80.0 + 30.0 * sin(s*s))
                          * atan(( 100.0 * y + 25.0 * x - 4.0 * sin(s) )
                                 / ( 1.0 + fabs(100.0 * x - 25.0 * y - 3.0 * atan(100.0 * x - 25.0 * y)) )) )
-                       + fabs((x / 2.0) - (y / 8.0))
+                       + fabs((x * ONE_OVER_TWO) - (y * ONE_OVER_EIGHT))
                        + (4.0 * sin(5.0 * s))),
                    6);
       }
@@ -204,7 +207,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                                                 + (ONE_OVER_THREE
                                                    * (x - (y * ONE_OVER_FOUR))
                                                    * (x - (y * ONE_OVER_FOUR)))) )
-                                 + pow(fabs((2.0 * x) - (y / 2.0)), 3)
+                                 + pow(fabs((2.0 * x) - (y * ONE_OVER_TWO)), 3)
                                  - TWO_OVER_FIVE));
       double omega3 =  - 1000 * fabs(x - (y * ONE_OVER_FOUR))
         + 100.0
@@ -219,7 +222,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                                             + x * ONE_OVER_FOUR
                                             - THREE_OVER_FIFTY
                                             + (ONE_OVER_THREE * (x - (y * ONE_OVER_FOUR)) * (x - (y * ONE_OVER_FOUR)))) ))
-                                + ( pow(fabs((2.0 * x) - (y / 2.0)), 3) )
+                                + ( pow(fabs((2.0 * x) - (y * ONE_OVER_TWO)), 3) )
                                 - TWO_OVER_FIVE)
         - 1.0 / 200.0;
       double omega6 = 700 * fabs(0.0
@@ -310,7 +313,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       Kvxy = 0.0;
       for (uint8_t i = 1; i <= 60; i++) {
         double s = i;
-        Kvxy +=  ( (5.0 / 2.0)
+        Kvxy +=  ( FIVE_OVER_TWO
                    * ( TWO_OVER_TWENTY_FIVE + THREE_OVER_FIFTY * cos(s * (4.0 + 4.0 * v)) )
                    * (sin(5.0 * s) + sin(2.0 * s) + 3.0) / 5.0
                    * exp(-exp(
@@ -318,11 +321,11 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                               - 25.0
                               * ( pow(sin( sin(2.0 * s)
                                            + (6 + sin(s * s))
-                                           * ( sin(7.0 * s) * (x / 2.0) + cos(7.0 * s) * ((y - 8.0) / 2.0) ) ),
+                                           * ( sin(7.0 * s) * (x * ONE_OVER_TWO) + cos(7.0 * s) * ((y - 8.0) * ONE_OVER_TWO) ) ),
                                       10)
                                   * pow(sin( sin(3.0 * s)
                                              + (6 + 2 * sin(s * s))
-                                             * ( sin(7.0 * s) * ((y - 8) / 2.0) - cos(7.0 * s) * (x / 2.0) ) ),
+                                             * ( sin(7.0 * s) * ((y - 8) * ONE_OVER_TWO) - cos(7.0 * s) * (x * ONE_OVER_TWO) ) ),
                                         10) - 0.1)
                               
                               )) );
@@ -345,7 +348,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       Kvxy = 0.0;
       for (uint8_t i = 1; i <= 60; i++) {
         double s = i;
-        Kvxy +=  ( (5.0 / 2.0)
+        Kvxy +=  ( FIVE_OVER_TWO
                    * ( TWO_OVER_TWENTY_FIVE + THREE_OVER_FIFTY * cos(s * (4.0 + 4.0 * v)) )
                    * (sin(5.0 * s) + sin(2.0 * s) + 3.0) / 5.0
                    * exp(-exp(
@@ -353,11 +356,11 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                               - 25.0
                               * ( pow(sin( sin(2.0 * s)
                                            + (6 + sin(s * s))
-                                           * ( sin(7.0 * s) * (x / 2.0) + cos(7.0 * s) * ((y - 8.0) / 2.0) ) ),
+                                           * ( sin(7.0 * s) * (x * ONE_OVER_TWO) + cos(7.0 * s) * ((y - 8.0) * ONE_OVER_TWO) ) ),
                                       10)
                                   * pow(sin( sin(3.0 * s)
                                              + (6 + 2 * sin(s * s))
-                                             * ( sin(7.0 * s) * ((y - 8) / 2.0) - cos(7.0 * s) * (x / 2.0) ) ),
+                                             * ( sin(7.0 * s) * ((y - 8) * ONE_OVER_TWO) - cos(7.0 * s) * (x * ONE_OVER_TWO) ) ),
                                         10) - 0.1)
                               
                               )) );
@@ -380,7 +383,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       Kvxy = 0.0;
       for (uint8_t i = 1; i <= 60; i++) {
         double s = i;
-        Kvxy +=  ( (5.0 / 2.0)
+        Kvxy +=  ( FIVE_OVER_TWO
                    * ( TWO_OVER_TWENTY_FIVE + THREE_OVER_FIFTY * cos(s * (4.0 + 4.0 * v)) )
                    * (sin(5.0 * s) + sin(2.0 * s) + 3.0) / 5.0
                    * exp(-exp(
@@ -388,11 +391,11 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                               - 25.0
                               * ( pow(sin( sin(2.0 * s)
                                            + (6 + sin(s * s))
-                                           * ( sin(7.0 * s) * (x / 2.0) + cos(7.0 * s) * ((y - 8.0) / 2.0) ) ),
+                                           * ( sin(7.0 * s) * (x * ONE_OVER_TWO) + cos(7.0 * s) * ((y - 8.0) * ONE_OVER_TWO) ) ),
                                       10)
                                   * pow(sin( sin(3.0 * s)
                                              + (6 + 2 * sin(s * s))
-                                             * ( sin(7.0 * s) * ((y - 8) / 2.0) - cos(7.0 * s) * (x / 2.0) ) ),
+                                             * ( sin(7.0 * s) * ((y - 8) * ONE_OVER_TWO) - cos(7.0 * s) * (x * ONE_OVER_TWO) ) ),
                                         10) - 0.1) )) );
       }
       Hvxy = 0.0

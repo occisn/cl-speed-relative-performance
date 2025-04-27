@@ -12,10 +12,14 @@
   "height of the picture, in pixels")
 (declaim (type fixnum *width* *height*))
 
+(defparameter *one-over-two* 0.5d0)
+(declaim (type double-float *one-over-two*))
 (defparameter *one-over-three* 0.33333333333333333d0)
 (declaim (type double-float *one-over-three*))
 (defparameter *one-over-four* 0.25d0)
 (declaim (type double-float *one-over-four*))
+(defparameter *one-over-eight* 0.125d0)
+(declaim (type double-float *one-over-eight*))
 (defparameter *one-over-twenty* 0.05d0)
 (declaim (type double-float *one-over-twenty*))
 (defparameter *one-over-twenty-five* 0.04d0)
@@ -28,6 +32,8 @@
 (declaim (type double-float *three-over-fifty*))
 (defparameter *four-over-five* 0.8d0)
 (declaim (type double-float *four-over-five*))
+(defparameter *five-over-two* 2.5d0)
+(declaim (type double-float *five-over-two*))
 (defparameter *seven-over-five* 1.4d0)
 (declaim (type double-float *seven-over-five*))
 
@@ -147,8 +153,8 @@
                                                            (* 25.0d0 y)
                                                            (* 3.0d0 (atan (- (* 100.0d0 x) (* 25.0d0 y))))))
                                                    1.0d0))))
-                                 (* 14 (abs (- (/ x 2.0d0)
-                                               (/ y 8.0d0))))))
+                                 (* 14 (abs (- (* x *one-over-two*)
+                                               (* y *one-over-eight*))))))
                          4))
               ;; Exy
 
@@ -203,7 +209,7 @@
                                                              (* 3.0d0 (atan (- (* 100.0d0 x)
                                                                                (* 25.0d0 y))))))
                                                      1.0d0))))
-                                      (abs (- (/ x 2.0d0) (/ y 8.0d0)))
+                                      (abs (- (* x *one-over-two*) (* y *one-over-eight*)))
                                       (* 4.0d0 (sin (* 5.0d0 s)))))
                               6)))
 
@@ -225,7 +231,7 @@
                                                          (* *one-over-three*
                                                             (- x (* y *one-over-four*))
                                                             (- x (* y *one-over-four*))))))
-                                                (expt (abs (- (* 2 x) (/ y 2.0d0))) 3)
+                                                (expt (abs (- (* 2 x) (* y *one-over-two*))) 3)
                                                 (- *two-over-five*)))))
                                (omega3 (+
                                         (- (* 1000
@@ -248,7 +254,7 @@
                                                          (* *one-over-three*
                                                             (- x (* y *one-over-four*))
                                                             (- x (* y *one-over-four*))))))
-                                                  (expt (abs (- (* 2 x) (/ y 2.0d0))) 3)
+                                                  (expt (abs (- (* 2 x) (* y *one-over-two*))) 3)
                                                   (- *two-over-five*)))
                                                 (- (/ 1.0d0 200.0d0)))))
                                (omega6 (+ (* 700
@@ -373,7 +379,7 @@
                           (setq Kvxy 0.0d0)
               (loop for s of-type fixnum from 1 to 60
                     do (incf Kvxy
-                             (* (/ 5.0d0 2.0d0)
+                             (* *five-over-two*
                                 (+ *two-over-twenty-five*
                                    (* *three-over-fifty*
                                       (cos (* s (+ 4.0d0 (* 4.0d0 v))))))
@@ -387,15 +393,15 @@
                                               (sin
                                                (+ (sin (* 2.0d0 s))
                                                   (* (+ 6 (sin (* 1.0d0 s s)))
-                                                     (+ (* (sin (* 7.0d0 s)) (/ x 2.0d0))
-                                                        (* (cos (* 7.0d0 s)) (/ (- y 8) 2.0d0))))))
+                                                     (+ (* (sin (* 7.0d0 s)) (* x *one-over-two*))
+                                                        (* (cos (* 7.0d0 s)) (* (- y 8) *one-over-two*))))))
                                               10)
                                              (expt
                                               (sin
                                                (+ (sin (* 3.0d0 s))
                                                   (* (+ 6 (* 2 (sin (* 1.0d0 s s))))
-                                                     (- (* (sin (* 7.0d0 s)) (/ (- y 8) 2.0d0))
-                                                        (* (cos (* 7.0d0 s)) (/ x 2.0d0))))))
+                                                     (- (* (sin (* 7.0d0 s)) (* (- y 8) *one-over-two*))
+                                                        (* (cos (* 7.0d0 s)) (* x *one-over-two*))))))
                                               10.0d0))
                                           0.1d0)))))))
               (setq Hvxy (+
@@ -419,7 +425,7 @@
                           (setq Kvxy 0.0d0)
               (loop for s of-type fixnum from 1 to 60
                     do (incf Kvxy
-                             (* (/ 5.0d0 2.0d0)
+                             (* *five-over-two*
                                 (+ *two-over-twenty-five*
                                    (* *three-over-fifty*
                                       (cos (* s (+ 4.0d0 (* 4.0d0 v))))))
@@ -433,15 +439,15 @@
                                               (sin
                                                (+ (sin (* 2.0d0 s))
                                                   (* (+ 6 (sin (* 1.0d0 s s)))
-                                                     (+ (* (sin (* 7.0d0 s)) (/ x 2.0d0))
-                                                        (* (cos (* 7.0d0 s)) (/ (- y 8) 2.0d0))))))
+                                                     (+ (* (sin (* 7.0d0 s)) (* x *one-over-two*))
+                                                        (* (cos (* 7.0d0 s)) (* (- y 8) *one-over-two*))))))
                                               10)
                                              (expt
                                               (sin
                                                (+ (sin (* 3.0d0 s))
                                                   (* (+ 6 (* 2 (sin (* 1.0d0 s s))))
-                                                     (- (* (sin (* 7.0d0 s)) (/ (- y 8) 2.0d0))
-                                                        (* (cos (* 7.0d0 s)) (/ x 2.0d0))))))
+                                                     (- (* (sin (* 7.0d0 s)) (* (- y 8) *one-over-two*))
+                                                        (* (cos (* 7.0d0 s)) (* x *one-over-two*))))))
                                               10.0d0))
                                           0.1d0)))))))
               (setq Hvxy (+
@@ -465,7 +471,7 @@
                           (setq Kvxy 0.0d0)
               (loop for s of-type fixnum from 1 to 60
                     do (incf Kvxy
-                             (* (/ 5.0d0 2.0d0)
+                             (* *five-over-two*
                                 (+ *two-over-twenty-five*
                                    (* *three-over-fifty*
                                       (cos (* s (+ 4.0d0 (* 4.0d0 v))))))
@@ -479,15 +485,15 @@
                                               (sin
                                                (+ (sin (* 2.0d0 s))
                                                   (* (+ 6 (sin (* 1.0d0 s s)))
-                                                     (+ (* (sin (* 7.0d0 s)) (/ x 2.0d0))
-                                                        (* (cos (* 7.0d0 s)) (/ (- y 8) 2.0d0))))))
+                                                     (+ (* (sin (* 7.0d0 s)) (* x *one-over-two*))
+                                                        (* (cos (* 7.0d0 s)) (* (- y 8) *one-over-two*))))))
                                               10)
                                              (expt
                                               (sin
                                                (+ (sin (* 3.0d0 s))
                                                   (* (+ 6 (* 2 (sin (* 1.0d0 s s))))
-                                                     (- (* (sin (* 7.0d0 s)) (/ (- y 8) 2.0d0))
-                                                        (* (cos (* 7.0d0 s)) (/ x 2.0d0))))))
+                                                     (- (* (sin (* 7.0d0 s)) (* (- y 8) *one-over-two*))
+                                                        (* (cos (* 7.0d0 s)) (* x *one-over-two*))))))
                                               10.0d0))
                                           0.1d0)))))))
               (setq Hvxy (+
