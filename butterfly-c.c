@@ -7,12 +7,22 @@
 #define HEIGHT 1100 // for n
 #define WIDTH 2000 // for m
 
+#define ONE_OVER_THREE 0.33333333333333333
+#define ONE_OVER_FOUR 0.25
+#define ONE_OVER_TWENTY 0.05
+#define ONE_OVER_TWENTY_FIVE 0.04
+#define TWO_OVER_FIVE 0.4
+#define TWO_OVER_TWENTY_FIVE 0.08
+#define THREE_OVER_FIFTY 0.06
+#define FOUR_OVER_FIVE 0.8
+#define SEVEN_OVER_FIVE 1.4
+
 double exp_minus_exp(double x) {
   return (x > 85.0) ? 0.0 : exp(-exp(x));
 }
 
-double exp_minus_exp_plus_exp(double x, double y) {
-  return (x > 85.0 || y > 85.0) ? 0.0 : exp(- (exp(x) + exp(y)));
+double exp_minus_exp_minus_exp(double x, double y) {
+  return (x > 85.0 || y > 85.0) ? 0.0 : exp(- exp(x) - exp(y));
 }
 
 // Function to create the BMP file
@@ -26,31 +36,31 @@ void save_bmp(const char *filename, uint8_t **r_array, uint8_t **g_array, uint8_
 
     // BMP file header (14 bytes)
     uint8_t file_header[14] = {
-        'B', 'M',                // Signature
-        0, 0, 0, 0,              // File size (we'll update later)
-        0, 0,                    // Reserved
-        0, 0,                    // Reserved
-        54, 0, 0, 0              // Pixel data offset (54 bytes)
+      'B', 'M',                // Signature
+      0, 0, 0, 0,              // File size (we'll update later)
+      0, 0,                    // Reserved
+      0, 0,                    // Reserved
+      54, 0, 0, 0              // Pixel data offset (54 bytes)
     };
-
+    
     // BMP info header (40 bytes)
     uint8_t info_header[40] = {
-        40, 0, 0, 0,             // Header size
-        0, 0, 0, 0,             // Image width (we'll update later)
-        0, 0, 0, 0,             // Image height (we'll update later)
-        1, 0,                   // Color planes (1)
-        24, 0,                  // Bits per pixel (24 for RGB)
-        0, 0, 0, 0,             // Compression (none)
-        0, 0, 0, 0,             // Image size (we'll update later)
-        0, 0, 0, 0,             // Horizontal resolution
-        0, 0, 0, 0,             // Vertical resolution
-        0, 0, 0, 0              // Colors in palette (0 means no palette)
+      40, 0, 0, 0,             // Header size
+      0, 0, 0, 0,             // Image width (we'll update later)
+      0, 0, 0, 0,             // Image height (we'll update later)
+      1, 0,                   // Color planes (1)
+      24, 0,                  // Bits per pixel (24 for RGB)
+      0, 0, 0, 0,             // Compression (none)
+      0, 0, 0, 0,             // Image size (we'll update later)
+      0, 0, 0, 0,             // Horizontal resolution
+      0, 0, 0, 0,             // Vertical resolution
+      0, 0, 0, 0              // Colors in palette (0 means no palette)
     };
-
+    
     // Calculate row size and padding
     int row_size = width * 3;  // 3 bytes per pixel (RGB)
     int padding = (4 - (row_size % 4)) % 4;  // Padding to align rows to 4 bytes
-
+    
     // Calculate the total file size
     int data_size = (row_size + padding) * height;  // Pixel data size
     int file_size = 54 + data_size;  // File header + info header + pixel data
@@ -146,7 +156,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       
       double Cxy = pow(sin(0
                  + ( 14 * atan(
-                               ( 100 * (y + (x / 4.0) - (1.0 / 25.0)) )
+                               ( 100 * (y + (x * ONE_OVER_FOUR) - ONE_OVER_TWENTY_FIVE) )
                                / ( 1.0 + fabs(100.0 * x - 25.0 * y - 3.0 * atan(100.0 * x - 25.0 * y)) )) )
                  + ( 14 * fabs((x / 2.0) - (y / 8.0)) )),
              4);
@@ -157,15 +167,15 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
         1.0
         - exp(-exp( 0
                     + ( -100.0 * pow((3.0 * y + 0.75 * x + 0.27), 4) )
-                + ( -100.0 * pow(fabs(7
-                                      * ( 1.0 + 1.0 / ( sqrt(fabs(100.0 * y + 25.0 * x - 6.0)) + 0.3 ) )
-                                      * (x - y / 4.0)),
-                                 (3.0 * y + 0.75 * x + 2.27)) )
+                    + ( -100.0 * pow(fabs(7
+                                          * ( 1.0 + 1.0 / ( sqrt(fabs(100.0 * y + 25.0 * x - 6.0)) + 0.3 ) )
+                                          * (x - y * ONE_OVER_FOUR)),
+                                     (3.0 * y + 0.75 * x + 2.27)) )
                     + 10.0))
-        * (1.0 - exp(0.0
-                     - exp( 200.0 * fabs(y + x / 4.0 - 0.2 + 3 * (x - y / 4.0) * (x - y / 4.0)) - 32.0)
-                     - exp(500.0 * fabs(y + x / 4.0 - (1.0 / 20.0) - (0.7 * sqrt(fabs(x - y / 4.0)))) - 2.5)));
-
+        * (1.0 - exp_minus_exp_minus_exp(
+                                         ( 200.0 * fabs(y + x * ONE_OVER_FOUR - 0.2 + 3 * (x - y * ONE_OVER_FOUR) * (x - y * ONE_OVER_FOUR)) - 32.0),
+                                         (500.0 * fabs(y + x * ONE_OVER_FOUR - ONE_OVER_TWENTY - (0.7 * sqrt(fabs(x - y * ONE_OVER_FOUR)))) - 2.5)));
+                                         
       // Lxy
       
       double Lxy = 0.0;
@@ -183,65 +193,65 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       double omega1 = 0.0
         + (- 40 * Cxy)
         + (196.0 / 5.0)
-        + ((4.0 / 5.0)
+        + (FOUR_OVER_FIVE
            * (sqrt(0
-                   + ( (x - (y / 4.0)) * (x - (y / 4.0)) )
-                   + ( (y + (x / 4.0)) * (y + (x / 4.0)) ))));
+                   + ( (x - (y * ONE_OVER_FOUR)) * (x - (y * ONE_OVER_FOUR)) )
+                   + ( (y + (x * ONE_OVER_FOUR)) * (y + (x * ONE_OVER_FOUR)) ))));
       double omega2 = - (40.0 * (0
                                  + ( 5.0 * fabs(y
-                                                + (x / 4.0)
-                                                - (3.0 / 50.0)
-                                                + ((1.0/ 3.0)
-                                                   * (x - (y / 4.0))
-                                                   * (x - (y / 4.0)))) )
+                                                + (x * ONE_OVER_FOUR)
+                                                - THREE_OVER_FIFTY
+                                                + (ONE_OVER_THREE
+                                                   * (x - (y * ONE_OVER_FOUR))
+                                                   * (x - (y * ONE_OVER_FOUR)))) )
                                  + pow(fabs((2.0 * x) - (y / 2.0)), 3)
-                                 - (2.0 / 5.0)));
-      double omega3 =  - 1000 * fabs(x - (y / 4.0))
+                                 - TWO_OVER_FIVE));
+      double omega3 =  - 1000 * fabs(x - (y * ONE_OVER_FOUR))
         + 100.0
         - 90.0 * atan(8.0 * y
                       + 2.0 * x
                       + (8.0 / 5.0)); // to be checked
       double omega4 = 1000 * (0.0
-                              + fabs(x - y / 4.0)
+                              + fabs(x - y * ONE_OVER_FOUR)
                               - 7.0 / 50.0
-                              + ( 9.0 * (y + (x / 4.0) + 0.2) / 20.0 ));
+                              + ( 9.0 * (y + (x * ONE_OVER_FOUR) + 0.2) / 20.0 ));
       double omega5 = 70 * fabs((5 * ( fabs(y
-                                            + x / 4.0
-                                            - 3.0 / 50.0
-                                            + ((1.0 / 3.0) * (x - (y / 4.0)) * (x - (y / 4.0)))) ))
+                                            + x * ONE_OVER_FOUR
+                                            - THREE_OVER_FIFTY
+                                            + (ONE_OVER_THREE * (x - (y * ONE_OVER_FOUR)) * (x - (y * ONE_OVER_FOUR)))) ))
                                 + ( pow(fabs((2.0 * x) - (y / 2.0)), 3) )
-                                - 2.0 / 5.0)
+                                - TWO_OVER_FIVE)
         - 1.0 / 200.0;
       double omega6 = 700 * fabs(0.0
-                                 + fabs(x - y / 4.0)
+                                 + fabs(x - y * ONE_OVER_FOUR)
                                  - 0.1
-                                 + (  0.9 * atan(8.0 * (y + (x / 4.0) + (1 / 5.0))) ))
+                                 + (  0.9 * atan(8.0 * (y + (x * ONE_OVER_FOUR) + (1 / 5.0))) ))
         - 21.0/20.0;
-      double Wxy = (- exp_minus_exp_plus_exp(omega1, omega2)) * (1.0 - exp_minus_exp_plus_exp(omega3, omega4))
+      double Wxy = (- exp_minus_exp_minus_exp(omega1, omega2)) * (1.0 - exp_minus_exp_minus_exp(omega3, omega4))
         - exp_minus_exp(omega5)
         - exp_minus_exp(omega6)
         + 1.0;
 
       // Avxy
 
-      double A_part1 = (x / 4.0)
+      double A_part1 = (x * ONE_OVER_FOUR)
         + y
-        -0.25 * fabs(sin( (12.0 / 5.0) * ( (0.7 * fabs(x - (y / 4.0))
-                                            + (0.3 * sqrt(fabs(x - y / 4.0)))) ) ));
+        -0.25 * fabs(sin( (12.0 / 5.0) * ( (0.7 * fabs(x - (y * ONE_OVER_FOUR))
+                                            + (0.3 * sqrt(fabs(x - y * ONE_OVER_FOUR)))) ) ));
 
-      double A_part2 = x / 4.0
+      double A_part2 = x * ONE_OVER_FOUR
         + 7.0 / 20.0
         + y
-        + 0.2 * atan(6.0 * fabs(x - (y / 4.0)))
-        + 0.2 * atan(40.0 * fabs(x - (y / 4.0)))
+        + 0.2 * atan(6.0 * fabs(x - (y * ONE_OVER_FOUR)))
+        + 0.2 * atan(40.0 * fabs(x - (y * ONE_OVER_FOUR)))
         - (23.0 / 20.0)
         * ( 1.5
-            + (1.0 / 25.0) * cos(10.0 * (y + (x / 4.0) + (6.0 / 25.0)))
+            + ONE_OVER_TWENTY_FIVE * cos(10.0 * (y + (x * ONE_OVER_FOUR) + (6.0 / 25.0)))
             + 0.03 * Cxy
-            + 0.3 * atan(30.0 * (y + (x / 4.0) - 0.25)) )
-        * fabs(x - (y / 4.0));
+            + 0.3 * atan(30.0 * (y + (x * ONE_OVER_FOUR) - 0.25)) )
+        * fabs(x - (y * ONE_OVER_FOUR));
 
-       uint8_t v;
+      uint8_t v;
        
       v = 0;
       double A0xy = exp(-exp(200.0 * ( v / 50.0 + A_part1))
@@ -261,19 +271,19 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
                         + exp(
                               (2.0 * y)
                               + (0.5 * x)
-                              + (2.0 / 5.0)
-                              - (2.0 * fabs(x - (y / 4.0))))
+                              + TWO_OVER_FIVE
+                              - (2.0 * fabs(x - (y * ONE_OVER_FOUR))))
                         + exp(
                               (8.0 * y)
                               + (2.0 * x)
-                              + (2.0 / 5.0)
+                              + TWO_OVER_FIVE
                               - fabs((8.0 * x) - (2.0 * y))))
         * Wxy;
 
       double H_part2 = exp_minus_exp( - (50.0 *
                                  ( (pow(cos ((2.0 * y) 
                                              + (x * 0.5)
-                                             + (7.0 / 5.0)
+                                             + SEVEN_OVER_FIVE
                                              - fabs((2.0 * x)
                                                     - (y * 0.5))),
                                         80)
@@ -301,7 +311,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       for (uint8_t i = 1; i <= 60; i++) {
         double s = i;
         Kvxy +=  ( (5.0 / 2.0)
-                   * ( (2.0 / 25.0) + (3.0 / 50.0) * cos(s * (4.0 + 4.0 * v)) )
+                   * ( TWO_OVER_TWENTY_FIVE + THREE_OVER_FIFTY * cos(s * (4.0 + 4.0 * v)) )
                    * (sin(5.0 * s) + sin(2.0 * s) + 3.0) / 5.0
                    * exp(-exp(
                               
@@ -336,7 +346,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       for (uint8_t i = 1; i <= 60; i++) {
         double s = i;
         Kvxy +=  ( (5.0 / 2.0)
-                   * ( (2.0 / 25.0) + (3.0 / 50.0) * cos(s * (4.0 + 4.0 * v)) )
+                   * ( TWO_OVER_TWENTY_FIVE + THREE_OVER_FIFTY * cos(s * (4.0 + 4.0 * v)) )
                    * (sin(5.0 * s) + sin(2.0 * s) + 3.0) / 5.0
                    * exp(-exp(
                               
@@ -371,7 +381,7 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       for (uint8_t i = 1; i <= 60; i++) {
         double s = i;
         Kvxy +=  ( (5.0 / 2.0)
-                   * ( (2.0 / 25.0) + (3.0 / 50.0) * cos(s * (4.0 + 4.0 * v)) )
+                   * ( TWO_OVER_TWENTY_FIVE + THREE_OVER_FIFTY * cos(s * (4.0 + 4.0 * v)) )
                    * (sin(5.0 * s) + sin(2.0 * s) + 3.0) / 5.0
                    * exp(-exp(
                               
@@ -406,6 +416,19 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
       if ( (m == 1) && ( (n == 1) || ((n % 100) == 0) )) {
         printf("n = %d\n", n );
       }
+
+      if ((n == 200) && (m == 200)) {
+        printf("Cxy(n = %d, m = %d) = %f\n", n, m, Cxy);
+        printf("Exy(n = %d, m = %d) = %f\n", n, m, Exy);
+        printf("Lxy(n = %d, m = %d) = %f\n", n, m, Lxy);
+        printf("Wxy(n = %d, m = %d) = %f\n", n, m, Wxy);
+        printf("A_part1(n = %d, m = %d) = %f\n", n, m, A_part1);
+        printf("A_part2(n = %d, m = %d) = %f\n", n, m, A_part2);
+        printf("A0xy(n = %d, m = %d) = %f\n", n, m, A0xy);
+        printf("A1xy(n = %d, m = %d) = %f\n", n, m, A1xy);
+        fflush(stdout);
+      }
+      
     }
   }
 

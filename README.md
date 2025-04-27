@@ -6,7 +6,7 @@ Hobby project to compare execution speed between several languages, namely C, Co
 
 One of the objectives is to see to which extent Common Lisp could be as fast as C.
 
-On the two examples (Leibniz formula and butterfly), Common Lisp SBCL is as fast as C.
+On the two examples (Leibniz formula and butterfly), Common Lisp SBCL is as fast as C, or, at least, in the same order of magnitude.
 
 More precisely, compared languages will be:  
 - C: single-threaded, with parallelism  
@@ -299,9 +299,9 @@ GNU Emacs version: 29.4
 
 ## 2. Butterfly
 
-| Language                                 | Execution duration  |
-|------------------------------------------|---------------------|
-| **C**, -O3, basic                        | **217 s**          |
-| **Common Lisp SBCL**, typed and (speed 3) | **205 s**          |
+| Language                                  | Execution duration |
+|-------------------------------------------|--------------------|
+| **C**, -O3, basic                         | **193 s**          |
+| **Common Lisp SBCL**, typed and (speed 3) | **250 s**          |
 
 (end of README)

@@ -12,13 +12,32 @@
   "height of the picture, in pixels")
 (declaim (type fixnum *width* *height*))
 
+(defparameter *one-over-three* 0.33333333333333333d0)
+(declaim (type double-float *one-over-three*))
+(defparameter *one-over-four* 0.25d0)
+(declaim (type double-float *one-over-four*))
+(defparameter *one-over-twenty* 0.05d0)
+(declaim (type double-float *one-over-twenty*))
+(defparameter *one-over-twenty-five* 0.04d0)
+(declaim (type double-float *one-over-twenty-five*))
+(defparameter *two-over-five* 0.4d0)
+(declaim (type double-float *two-over-five*))
+(defparameter *two-over-twenty-five* 0.08d0)
+(declaim (type double-float *two-over-twenty-five*))
+(defparameter *three-over-fifty* 0.06d0)
+(declaim (type double-float *three-over-fifty*))
+(defparameter *four-over-five* 0.8d0)
+(declaim (type double-float *four-over-five*))
+(defparameter *seven-over-five* 1.4d0)
+(declaim (type double-float *seven-over-five*))
+
 (defmacro exp-exp (x)
   "Expand into (exp (- (exp X))), or 0 if X or Y is above 85 (in order to avoid overflow)."
   `(if (> ,x 85.0d0)
        0.0d0
        (exp (- (exp ,x)))))
 
-(defmacro exp-exp+exp (x y)
+(defmacro exp-exp-exp (x y)
   "Expand into (exp (- (+ (exp X) (exp Y))), or 0 if X or Y is above 85 (in order to avoid overflow)."
   `(if (or (> ,x 85.0d0) (> ,y 85.0d0))
        0.0d0
@@ -122,17 +141,15 @@
               
               (setq Cxy (expt
                          (sin (+ (* 14 (atan (/ (* 100 (+ y
-                                                          (/ x 4.0d0)
-                                                          (- (/ 1.0d0 25.0d0))))
+                                                          (* x *one-over-four*)
+                                                          (- *one-over-twenty-five*)))
                                                 (+ (abs (- (* 100.0d0 x)
                                                            (* 25.0d0 y)
-                                                           (* 3.0d0 (atan (- (* 100.0d0 x)
-                                                                             (* 25.0d0 y))))))
+                                                           (* 3.0d0 (atan (- (* 100.0d0 x) (* 25.0d0 y))))))
                                                    1.0d0))))
                                  (* 14 (abs (- (/ x 2.0d0)
                                                (/ y 8.0d0))))))
                          4))
-
               ;; Exy
 
               (setq Exy
@@ -151,24 +168,24 @@
                                                                             (* 25 x)
                                                                             (- 6)))))
                                                                   0.3d0)))
-                                                         (- x (/ y 4.0d0))))
+                                                         (- x (* y *one-over-four*))))
                                                      (+ (* 3 y) (* 0.75d0 x) 2.27d0))))))
                           (- 1.0d0
-                             (exp-exp+exp
-                              (+ (* 200
+                             (exp-exp-exp
+                              (- (* 200
                                     (abs
                                      (+ y
-                                        (/ x 4.0d0)
+                                        (* x *one-over-four*)
                                         (- 0.2d0)
-                                        (* 3 (- x (/ y 4.0d0)) (- x (/ y 4.0d0))))))
-                                 -32.0d0)
-                              (+ (* 500
+                                        (* 3 (- x (* y *one-over-four*)) (- x (* y *one-over-four*))))))
+                                 32.0d0)
+                              (- (* 500
                                     (abs
                                      (+ y
-                                        (/ x 4.0d0)
-                                        (- (/ 1.0d0 20.0d0))
-                                        (- (* 0.7d0 (sqrt (abs (- x (/ y 4.0d0)))))))))
-                                 -2.5d0))))))
+                                        (* x *one-over-four*)
+                                        (- *one-over-twenty*)
+                                        (- (* 0.7d0 (sqrt (abs (- x (* y *one-over-four*)))))))))
+                                 2.5d0))))))
               
 
               ;; Lxy
@@ -194,61 +211,61 @@
 
               (setq Wxy (let* ((omega1 (+ (- (* 40 Cxy))
                                           (/ 196.0d0 5.0d0)
-                                          (* (/ 4.0d0 5.0d0)
+                                          (* *four-over-five*
                                              (sqrt (the (double-float 0.0d0)
-                                                        (+ (* (- x (/ y 4.0d0))
-                                                              (- x (/ y 4.0d0)))
-                                                           (* (+ y (/ x 4.0d0))
-                                                              (+ y (/ x 4.0d0)))))))))
+                                                        (+ (* (- x (* y *one-over-four*))
+                                                              (- x (* y *one-over-four*)))
+                                                           (* (+ y (* x *one-over-four*))
+                                                              (+ y (* x *one-over-four*)))))))))
                                (omega2 (- (* 40
                                              (+ (* 5 (abs
                                                       (+ y
-                                                         (/ x 4.0d0)
-                                                         (- (/ 3 50.0d0))
-                                                         (* (/ 1.0d0 3.0d0)
-                                                            (- x (/ y 4.0d0))
-                                                            (- x (/ y 4.0d0))))))
+                                                         (* x *one-over-four*)
+                                                         (- *three-over-fifty*)
+                                                         (* *one-over-three*
+                                                            (- x (* y *one-over-four*))
+                                                            (- x (* y *one-over-four*))))))
                                                 (expt (abs (- (* 2 x) (/ y 2.0d0))) 3)
-                                                (- (/ 2.0d0 5.0d0))))))
+                                                (- *two-over-five*)))))
                                (omega3 (+
                                         (- (* 1000
-                                              (+ (abs (- x (/ y 4.0d0))))))
+                                              (+ (abs (- x (* y *one-over-four*))))))
                                         100.0d0
                                         (- (* 90.0d0 (atan (+ (* 8 y)
                                                               (* 2 x)
                                                               (/ 8 5.0d0)))))))
-                               (omega4 (* 1000 (+ (abs (- x (/ y 4.0d0)))
-                                                  (- (/ 7 50.0d0))
+                               (omega4 (* 1000 (+ (abs (- x (* y *one-over-four*)))
+                                                  (- (/ 7.0d0 50.0d0))
                                                   (* (/ 9.0d0 20.0d0)
-                                                     (+ y (/ x 4.0d0) 0.2d0)))))
+                                                     (+ y (* x *one-over-four*) 0.2d0)))))
                                (omega5 (* 70 (+ (abs
                                                  (+
                                                   (* 5
                                                      (abs
                                                       (+ y
-                                                         (/ x 4.0d0)
-                                                         (- (/ 3 50.0d0))
-                                                         (* (/ 1.0d0 3.0d0)
-                                                            (- x (/ y 4.0d0))
-                                                            (- x (/ y 4.0d0))))))
+                                                         (* x *one-over-four*)
+                                                         (- *three-over-fifty*)
+                                                         (* *one-over-three*
+                                                            (- x (* y *one-over-four*))
+                                                            (- x (* y *one-over-four*))))))
                                                   (expt (abs (- (* 2 x) (/ y 2.0d0))) 3)
-                                                  (- (/ 2 5.0d0))))
+                                                  (- *two-over-five*)))
                                                 (- (/ 1.0d0 200.0d0)))))
                                (omega6 (+ (* 700
                                              (abs
                                               (+
-                                               (abs (- x (/ y 4.0d0)))
+                                               (abs (- x (* y *one-over-four*)))
                                                (- 0.1d0)
                                                (* 0.09d0 (atan (* 8
                                                                   (+ y
-                                                                     (/ x 4.0d0)
+                                                                     (* x *one-over-four*)
                                                                      (/ 1 5.0d0))))))))
                                           (- (/ 21 20.0d0)))))
                           
                           (declare (type double-float omega1 omega2 omega3 omega4 omega5 omega6))
                           
-                          (+ (* (- (exp-exp+exp omega1 omega2))
-                                (- 1 (exp-exp+exp omega3 omega4)))
+                          (+ (* (- (exp-exp-exp omega1 omega2))
+                                (- 1 (exp-exp-exp omega3 omega4)))
                              (- (exp-exp omega5))
                              (- (exp-exp omega6))
                              1.0d0)))
@@ -257,33 +274,33 @@
 
               (setq A-part1 (+ 
                              y
-                             (/ x 4.0d0)
+                             (* x *one-over-four*)
                              (- (* .25d0
                                    (abs
                                     (sin
                                      (* (/ 12.0d0 5.0d0)
-                                        (+ (* .7d0 (abs (- x (/ y 4.0d0))))
-                                           (* .3d0 (sqrt (abs (- x (/ y 4.0d0)))))))))))))
+                                        (+ (* .7d0 (abs (- x (* y *one-over-four*))))
+                                           (* .3d0 (sqrt (abs (- x (* y *one-over-four*)))))))))))))
               
               (setq A-part2 (+ 
                              y
-                             (/ x 4.0d0)
+                             (* x *one-over-four*)
                              (/ 7.0d0 20.0d0)
-                             (* 0.2d0 (atan (* 6.0d0 (abs (- x (/ y 4.0d0))))))
-                             (* 0.2d0 (atan (* 40.0d0 (abs (- x (/ y 4.0d0))))))y
+                             (* 0.2d0 (atan (* 6.0d0 (abs (- x (* y *one-over-four*))))))
+                             (* 0.2d0 (atan (* 40.0d0 (abs (- x (* y *one-over-four*))))))
                              (- (* (/ 23.0d0 20.0d0)
                                    (+ 1.5d0
-                                      (* (/ 1.0d0 25.0d0)
+                                      (* *one-over-twenty-five*
                                          (cos
                                           (* 10.0d0
                                              (+ y
-                                                (/ x 4.0d0)
+                                                (* x *one-over-four*)
                                                 (/ 6.0d0 25.0d0)))))
                                       (* 0.03d0 Cxy)
                                       (* 0.3d0
                                          (atan (* 30.0d0
-                                                  (+ y (/ x 4.0d0) (- 0.25d0))))))
-                                   (abs (- x (/ y 4.0d0)))))))
+                                                  (+ y (* x *one-over-four*) (- 0.25d0))))))
+                                   (abs (- x (* y *one-over-four*)))))))
 
               (setq v 0)
               (setq A0xy (exp
@@ -322,12 +339,12 @@
                                (exp-exp (+ (exp
                                             (+ (* 2 y)
                                                (* 0.5d0 x)
-                                               (/ 2.0d0 5.0d0)
-                                               (- (* 2.0d0 (abs (- x (/ y 4.0d0)))))))
+                                               *two-over-five*
+                                               (- (* 2.0d0 (abs (- x (* y *one-over-four*)))))))
                                            (exp
                                             (+ (* 8 y)
                                                (* 2 x)
-                                               (/ 2.0d0 5.0d0)
+                                               *two-over-five*
                                                (- (abs (- (* 8 x) (* 2 y))))))))
                                Wxy))
 
@@ -335,7 +352,7 @@
                              (- (* 50.0d0
                                    (+ (* (expt (cos (+ (* 2 y) 
                                                        (* x 0.5d0)
-                                                       (/ 7 5.0d0)
+                                                       *seven-over-five*
                                                        (- (abs (- (* 2 x)
                                                                   (* y 0.5d0))))))
                                                80)
@@ -357,8 +374,8 @@
               (loop for s of-type fixnum from 1 to 60
                     do (incf Kvxy
                              (* (/ 5.0d0 2.0d0)
-                                (+ (/ 2.0d0 25.0d0)
-                                   (* (/ 3.0d0 50.0d0)
+                                (+ *two-over-twenty-five*
+                                   (* *three-over-fifty*
                                       (cos (* s (+ 4.0d0 (* 4.0d0 v))))))
                                 (/ (+ (sin (* 5.0d0 s))
                                       (sin (* 2.0d0 s))
@@ -403,8 +420,8 @@
               (loop for s of-type fixnum from 1 to 60
                     do (incf Kvxy
                              (* (/ 5.0d0 2.0d0)
-                                (+ (/ 2.0d0 25.0d0)
-                                   (* (/ 3.0d0 50.0d0)
+                                (+ *two-over-twenty-five*
+                                   (* *three-over-fifty*
                                       (cos (* s (+ 4.0d0 (* 4.0d0 v))))))
                                 (/ (+ (sin (* 5.0d0 s))
                                       (sin (* 2.0d0 s))
@@ -449,8 +466,8 @@
               (loop for s of-type fixnum from 1 to 60
                     do (incf Kvxy
                              (* (/ 5.0d0 2.0d0)
-                                (+ (/ 2.0d0 25.0d0)
-                                   (* (/ 3.0d0 50.0d0)
+                                (+ *two-over-twenty-five*
+                                   (* *three-over-fifty*
                                       (cos (* s (+ 4.0d0 (* 4.0d0 v))))))
                                 (/ (+ (sin (* 5.0d0 s))
                                       (sin (* 2.0d0 s))
@@ -492,7 +509,22 @@
               
               (setf (aref r-array (- n 1) (- m 1)) r)
               (setf (aref g-array (- n 1) (- m 1)) g)
-              (setf (aref b-array (- n 1) (- m 1)) b))
+              (setf (aref b-array (- n 1) (- m 1)) b)
+
+              (when (and (= 200 m) (= 200 n))
+                (locally
+                    (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+                  (format t "Cxy(n = ~a, m = ~a) = ~a~%" n m Cxy)
+                  (format t "Exy(n = ~a, m = ~a) = ~a~%" n m Exy)
+                  (format t "Lxy(n = ~a, m = ~a) = ~a~%" n m Lxy)
+                  (format t "Wxy(n = ~a, m = ~a) = ~a~%" n m Wxy)
+                  (format t "A-part1(n = ~a, m = ~a) = ~a~%" n m A-part1)
+                  (format t "A-part2(n = ~a, m = ~a) = ~a~%" n m A-part2)
+                  (format t "A0xy(n = ~a, m = ~a) = ~a~%" n m A0xy)
+                  (format t "A1xy(n = ~a, m = ~a) = ~a~%" n m A1xy)
+                  ))
+              
+              )
 
             ;; print some information:
             (when (and (= 1 m) (or (= 1 n) (= 0 (mod n 100))))
