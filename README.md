@@ -6,7 +6,7 @@ Hobby project to compare execution speed between several languages, namely C, Co
 
 One of the objectives is to see to which extent Common Lisp could be as fast as C.
 
-We will first use Leibniz formula as a test case.
+On the two examples (Leibniz formula and butterfly), Common Lisp SBCL is as fast as C.
 
 More precisely, compared languages will be:  
 - C: single-threaded, with parallelism  
@@ -25,8 +25,8 @@ More precisely, compared languages will be:
 - [1.5. Excel](#15-excel): [VBA](#151-excel-by-vba), [spreadsheet](#152-excel-by-spreadsheet), [recursion](#153-excel-by-recursion), [array formulas](#154-excel-by-array-formulas)  
 - [1.6. GNU Emacs Calc](#16-gnu-emacs-calc)
 
-**[2. Butterfly](#2-butterfly)** :  
-(later)
+**[2. Butterfly](#2-butterfly)** 
+
 
 ## 1. Leibniz formula
 
@@ -40,11 +40,11 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 
 | Language                                         | Results                        | Execution duration | Function name |
 |--------------------------------------------------|--------------------------------|--------------------|---------------|
-| **C**, -O3, basic                                | **3.141592653**68834583754     | **10.0 s**             | leibniz 3     |
+| **C**, -O3, basic                                | **3.141592653**68834583754     | **10.0 s**         | leibniz 3     |
 | **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
 | **C** with parallelism                           | ???                            | ???                |               |
 | **SBCL**, basic                                  | **3.14159265**258805040000 [4] | 177 s [4]          | leibniz 2     |
-| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | **10.0 s**             | leibniz 5     |
+| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | **10.0 s**         | leibniz 5     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
 | **SBCL** with parallelism                        | ???                            | ???                |               |
 | **SBCL** calling C                               | ???                            | ???                |               |
@@ -299,6 +299,9 @@ GNU Emacs version: 29.4
 
 ## 2. Butterfly
 
-(later)
+| Language                                 | Execution duration  |
+|------------------------------------------|---------------------|
+| **C**, -O3, basic                        | **217 s**          |
+| **Common Lisp SBCL**, type and (speed 3) | **205 s**          |
 
 (end of README)
