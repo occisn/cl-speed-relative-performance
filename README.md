@@ -301,7 +301,7 @@ GNU Emacs version: 29.4
 
 | Language                                  | Execution duration |
 |-------------------------------------------|--------------------|
-| **C**, -O3, basic                         | **193 s**          |
-| **Common Lisp SBCL**, typed and (speed 3) | **250 s**          |
+| **C**, -O3, basic                         | **172 s**          |
+| **Common Lisp SBCL**, typed and (speed 3) | **138 s**          |
 
 (end of README)
