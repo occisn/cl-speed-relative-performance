@@ -55,7 +55,7 @@ typedef struct {
 } RGBArrays;
 
 /* Creates BMP file from RGB arrays.
-   (proposed by ChatGTP and kept untouched still not involved in performance comparison)
+   (proposed by ChatGTP and kept untouched since not involved in performance comparison)
    */
 void save_bmp(const char *filename, RGBArrays* rgbArrays1) {
     FILE *f = fopen(filename, "wb");
