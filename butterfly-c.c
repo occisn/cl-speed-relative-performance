@@ -376,7 +376,7 @@ void freeRGBArrays(RGBArrays* rgbArrays1) {
 }
 
 /* Populates an RGBArrays struct with calculated values */
-void populateRGBArrays(RGBArrays* rgbArrays1) {
+void populateRGBArrays_1(RGBArrays* rgbArrays1) {
   double Axy[2];
   double Hxy[3];
   double x;
@@ -409,20 +409,59 @@ void populateRGBArrays(RGBArrays* rgbArrays1) {
   }
 }
 
-/* main function */
-int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
+/* Parallelization with pragma with chunks */
+void populateRGBArrays_2(RGBArrays* rgbArrays1) {
 
+  int chunk_size = rgbArrays1->height / 100;
+    
+  #pragma omp parallel for schedule(static, chunk_size)
+  for (uint16_t n = 1; n <= rgbArrays1->height; n++) {
+
+    double Axy[2];
+    double Hxy[3];
+    double x;
+    double y;
+    double Cxy;
+    double Exy;
+    double Lxy;
+    double Wxy;
+    
+    for (uint16_t m = 1; m <= rgbArrays1->width; m++) {
+      
+      x = (m - 1000.0) / 960.0;
+      y = (451.0 - n) / 960.0;
+      Cxy = C(x, y);
+      Exy = E(x, y);
+      Lxy = L(x, y);
+      Wxy = W(x, y, Cxy);
+      A(Axy, x, y, Cxy);
+      H(Hxy, x, y, Exy, Lxy, Wxy, Axy);
+
+      rgbArrays1->r_array[n-1][m-1] = F(Hxy[0]);
+      rgbArrays1->g_array[n-1][m-1] = F(Hxy[1]);
+      rgbArrays1->b_array[n-1][m-1] = F(Hxy[2]);
+
+      if ( (m == 1) && ( (n == 1) || ((n % 100) == 0) )) {
+        printf("n = %d\n", n );
+      }
+    }
+  }
+}
+
+int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
+  
   struct timespec start, end;
   double duration;
   clock_gettime(CLOCK_MONOTONIC, &start);
 
   RGBArrays* rgbArrays1 = mallocRGBArrays(height, width);
 
-  populateRGBArrays(rgbArrays1);
-  
+  populateRGBArrays_2(rgbArrays1);
+
   clock_gettime(CLOCK_MONOTONIC, &end);
   duration = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
   printf("Duration: %f seconds\n", duration);
+
   fflush(stdout);
   
   printf("Creating image...\n");
@@ -430,9 +469,6 @@ int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
 
   printf("Freeing memory allocated to RGB array...\n");
   freeRGBArrays(rgbArrays1);
-  
-  printf("End of program.\n");
 
   return EXIT_SUCCESS;
 }
-

@@ -1,3 +1,4 @@
+(ql:quickload :lparallel)
 
 (defpackage butterfly
   (:use :cl ))
@@ -449,7 +450,7 @@ TMP1 is a temporary 1-cell array."
     (declare (type fixnum res))
     res))
   
-(defun main ()
+(defun butterfly-1 ()
   "Main function. Create butterfly.bmp"
 
   (let ((start-time (get-internal-real-time)))
@@ -509,6 +510,169 @@ TMP1 is a temporary 1-cell array."
         (save-bmp-from-rgb-arrays export-file r-array g-array b-array *width* *height*)
         (format t "Done.~%")))))
 
-;;; (butterfly::main)
+(defun butterfly-2 ()
+  "Main function. Create butterfly.bmp"
+
+  (let ((start-time (get-internal-real-time)))
+    
+    (format t "1) Create RGB arrays...~%")
+    (let* ((export-file (merge-pathnames "butterfly-cl.bmp"))
+          (r-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0))
+          (g-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0))
+          (b-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0)))
+      
+      (declare (type (simple-array fixnum) r-array g-array b-array))
+      
+      (format t "2) Calculate RGB components...~%")
+      (setq lparallel:*kernel* (lparallel:make-kernel 8))
+      (let* ((nb-chunks 30)
+             (chunk-size (ceiling *height* nb-chunks))
+             (starts (make-array nb-chunks :element-type 'fixnum :initial-contents
+                                 (loop for j of-type fixnum from 1 to nb-chunks
+                                       for start of-type fixnum = 0 then (+ start chunk-size)
+                                       collect start)))
+             (partial-sums
+             (lparallel:pmap
+              '(simple-array fixnum (*))
+              (lambda (start)
+                (declare (type fixnum start))
+                (let ((end (min (- *height* 1) (+ start chunk-size))))
+                  (declare (type fixnum end))
+                  (loop for n of-type fixnum from (+ 1 start) below (+ 1 end)
+                        do
+                           (let ((x 0.0d0)
+                                 (y 0.0d0)
+                                 (Cxy 0.0d0)
+                                 (Exy 0.0d0)
+                                 (Lxy 0.0d0)
+                                 (Wxy 0.0d0)(tmp1 (make-array 1 :initial-element 0.0d0 :element-type 'double-float))
+                                 (Axy (make-array 2 :initial-element 0.0d0 :element-type 'double-float))
+                                 (Hxy (make-array 3 :initial-element 0.0d0 :element-type 'double-float)))
+                             (declare (type double-float x y Cxy Exy Lxy Wxy)
+                                      (type (simple-array double-float (1)) tmp1)
+                                      (type (simple-array double-float (2)) Axy)
+                                      (type (simple-array double-float (3)) Hxy))
+                             (loop for m of-type fixnum from 1 to *width* do
+                               (progn
+              (setq x (/ (- m 1000.0d0) 960.0d0))
+              (setq y (/ (- 451.0d0 n) 960.0d0))
+              (C tmp1 x y)
+              (setq Cxy (aref tmp1 0))
+              (E tmp1 x y)
+              (setq Exy (aref tmp1 0))
+              (L tmp1 x y)
+              (setq Lxy (aref tmp1 0))
+              (W tmp1 x y Cxy)
+              (setq Wxy (aref tmp1 0))
+              (A Axy x y Cxy)
+              (H Hxy x y Exy Lxy Wxy Axy tmp1)
+              (setf (aref r-array (- n 1) (- m 1)) (F (aref Hxy 0)))
+              (setf (aref g-array (- n 1) (- m 1)) (F (aref Hxy 1)))
+              (setf (aref b-array (- n 1) (- m 1)) (F (aref Hxy 2)))
+
+              ;; print some information:
+              (when (and (= 1 m) (or (= 1 n) (= 0 (mod n 100))))
+                (format t "n = ~a~%" n))))))
+                  1))
+              starts))
+             )
+        
+        (declare (type fixnum nb-chunks chunk-size)
+                 (type (simple-array fixnum (*)) starts)
+                 (type vector partial-sums)
+                 (ignore partial-sums)))
+
+      (let* ((end-time (get-internal-real-time))
+             (duration (/ (- end-time start-time) (float internal-time-units-per-second))))
+        
+        (locally
+            (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+          (format t "Duration: ~f seconds~%" duration))
+        
+        (format t "3) Export pic...~%")
+        ;; (draw-pic-from-rgb-arrays *height* *width* r-array g-array b-array export-file)
+        (save-bmp-from-rgb-arrays export-file r-array g-array b-array *width* *height*)
+        (format t "Done.~%")))))
+
+
+(defun butterfly-3 ()
+  "Main function. Create butterfly.bmp"
+
+  (let ((start-time (get-internal-real-time)))
+    
+    (format t "1) Create RGB arrays...~%")
+    (let* ((export-file (merge-pathnames "butterfly-cl.bmp"))
+          (r-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0))
+          (g-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0))
+          (b-array (make-array `(,*height* ,*width*) :element-type 'fixnum :initial-element 0)))
+      
+      (declare (type (simple-array fixnum) r-array g-array b-array))
+      
+      (format t "2) Calculate RGB components...~%")
+      (setq lparallel:*kernel* (lparallel:make-kernel 8))
+      (let* ((nb-chunks 30)
+             (chunk-size (ceiling *height* nb-chunks))
+             (threads (loop for i from 0 below nb-chunks
+                        collect (sb-thread:make-thread
+	                         (lambda (i)
+                                   (declare (type fixnum i))
+                                   (let* ((start (* i chunk-size))
+                                          (end (min (- *height* 1) (+ start chunk-size))))
+                                     (declare (type fixnum start end))
+                                     ;; (format t "from ~a to ~a~%" (+ 1 start) (+ 1 end))
+                                     (loop for n of-type fixnum from (+ 1 start) below (+ 1 end)
+                                           do
+                                              (let ((x 0.0d0)
+                                                    (y 0.0d0)
+                                                    (Cxy 0.0d0)
+                                                    (Exy 0.0d0)
+                                                    (Lxy 0.0d0)
+                                                    (Wxy 0.0d0)(tmp1 (make-array 1 :initial-element 0.0d0 :element-type 'double-float))
+                                                    (Axy (make-array 2 :initial-element 0.0d0 :element-type 'double-float))
+                                                    (Hxy (make-array 3 :initial-element 0.0d0 :element-type 'double-float)))
+                                                (declare (type double-float x y Cxy Exy Lxy Wxy)
+                                                         (type (simple-array double-float (1)) tmp1)
+                                                         (type (simple-array double-float (2)) Axy)
+                                                         (type (simple-array double-float (3)) Hxy))
+                               
+                                                (loop for m of-type fixnum from 1 to *width* do
+                                                  (progn
+                                                    (setq x (/ (- m 1000.0d0) 960.0d0))
+                                                    (setq y (/ (- 451.0d0 n) 960.0d0))
+                                                    (C tmp1 x y)
+                                                    (setq Cxy (aref tmp1 0))
+                                                    (E tmp1 x y)
+                                                    (setq Exy (aref tmp1 0))
+                                                    (L tmp1 x y)
+                                                    (setq Lxy (aref tmp1 0))
+                                                    (W tmp1 x y Cxy)
+                                                    (setq Wxy (aref tmp1 0))
+                                                    (A Axy x y Cxy)
+                                                    (H Hxy x y Exy Lxy Wxy Axy tmp1)
+                                                    (setf (aref r-array (- n 1) (- m 1)) (F (aref Hxy 0)))
+                                                    (setf (aref g-array (- n 1) (- m 1)) (F (aref Hxy 1)))
+                                                    (setf (aref b-array (- n 1) (- m 1)) (F (aref Hxy 2)))
+
+                                                    ;; print some information:
+                                                    (when (and (= 1 m) (or (= 1 n) (= 0 (mod n 100))))
+                                                      (format t "n = ~a~%" n))))))))
+                                 :arguments (list i)))))
+        
+        (declare (type fixnum nb-chunks chunk-size))
+
+        (dolist (thread threads)
+          (sb-thread:join-thread thread)))
+
+      (let* ((end-time (get-internal-real-time))
+             (duration (/ (- end-time start-time) (float internal-time-units-per-second))))
+        
+        (locally
+            (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+          (format t "Duration: ~f seconds~%" duration))
+        
+        (format t "3) Export pic...~%")
+        ;; (draw-pic-from-rgb-arrays *height* *width* r-array g-array b-array export-file)
+        (save-bmp-from-rgb-arrays export-file r-array g-array b-array *width* *height*)
+        (format t "Done.~%")))))
 
 ;;;; end

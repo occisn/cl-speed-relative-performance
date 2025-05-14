@@ -38,26 +38,26 @@ Actual digits of pi are: 3.14159265358979323846264338327950288419...
 
 For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage, **Common Lisp SBCL is as quick as C**:
 
-| Language                                         | Results                        | Execution duration | Function name |
-|--------------------------------------------------|--------------------------------|--------------------|---------------|
-| **C**, -O3, basic                                | **3.141592653**48834582099     | **10.1 s**         | leibniz 3b    |
-| **C** with pragma parallelism                    | **3.141592653**48820548880     | **2.8 s**          | leibniz 5     |
-| **C** with pragma parallelism + SIMD             | **3.141592653**49174532389     | **1.5 s**          | leibniz 9     |
-| **SBCL**, basic                                  | **3.14159265**258805040000 [4] | 177 s [4]          | leibniz 2     |
-| **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | **10.0 s**         | leibniz 5     |
-| **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
-| **SBCL** with parallelism                        | ???                            | ???                |               |
-| **SBCL** calling C                               | ???                            | ???                |               |
-| **Emacs Lisp**, interpreted                      | **3.141592**55358979150330 [2] | 4300 s [2]         | leibniz A 3   |
-| **Emacs Lisp**, byte-compiled                    | **3.141592**55358979150330 [2] | 2920 s [2]         | leibniz B 3   |
-| **Emacs Lisp**, native-compiled                  | **3.141592**55358979150330 [2] | 2870 s [2]         | leibniz C 3   |
-| **Emacs Lisp** calling C                         | ???                            | ???                |               |
-| **Excel**, VBA                                   | **3,1415926**4457277000000 [4] | 125 s [4]          | VBA 3         |
-| **Excel**, recursion (all cores)                 | **3,1415926**4053770000000 [3] | 1100 s [3]         | recursion 2   |
-| **Excel**, arrays formulas (all cores)           | **3.141592**55822236000000 [3] | 2200 s [3]         | version 3     |
-| **Excel** calling C                              | ???                            | ???                |               |
-| **GNU Emacs Calc** on stack                      | **3.141**49267357 [0]          | 10,000,000 s [0]   |               |
-| **GNU Emacs Calc** with algbraic expression      | **3.14159**165356 [1]          | 210,000 s [1]      |               |
+| Language                                    | Results                        | Execution duration | Function name |
+|---------------------------------------------|--------------------------------|--------------------|---------------|
+| **C**, -O3, basic                           | **3.141592653**48834582099     | **10.1 s**         | leibniz 3b    |
+| **C** with pragma parallelism               | **3.141592653**48820548880     | **2.8 s**          | leibniz 5     |
+| **C** with pragma parallelism + SIMD        | **3.141592653**49174532389     | **1.5 s**          | leibniz 9     |
+| **SBCL**, basic                             | **3.14159265**258805040000 [4] | 177 s [4]          | leibniz 2     |
+| **SBCL**, typed and (speed 3)               | **3.141592653**48834600000     | **10.1 s**         | leibniz 5ter  |
+| **SBCL** with parallelism (lparallel)       | **3.141592653**48898300000     | **3.5 s**          | leibniz 9     |
+| **SBCL** with parallelism (sb-threads)      | **3.141592653**48898300000     | **3.6 s**          | leibniz 10     |
+| **SBCL** calling C                          | **3.141592653**48898300000                            | ???                |               |
+| **Emacs Lisp**, interpreted                 | **3.141592**55358979150330 [2] | 4300 s [2]         | leibniz A 3   |
+| **Emacs Lisp**, byte-compiled               | **3.141592**55358979150330 [2] | 2920 s [2]         | leibniz B 3   |
+| **Emacs Lisp**, native-compiled             | **3.141592**55358979150330 [2] | 2870 s [2]         | leibniz C 3   |
+| **Emacs Lisp** calling C                    | ???                            | ???                |               |
+| **Excel**, VBA                              | **3,1415926**4457277000000 [4] | 125 s [4]          | VBA 3         |
+| **Excel**, recursion (all cores)            | **3,1415926**4053770000000 [3] | 1100 s [3]         | recursion 2   |
+| **Excel**, arrays formulas (all cores)      | **3.141592**55822236000000 [3] | 2200 s [3]         | version 3     |
+| **Excel** calling C                         | ???                            | ???                |               |
+| **GNU Emacs Calc** on stack                 | **3.141**49267357 [0]          | 10,000,000 s [0]   |               |
+| **GNU Emacs Calc** with algbraic expression | **3.14159**165356 [1]          | 210,000 s [1]      |               |
 
 
 [0] extrapolated from n = 10,000 (4 zeros)  
@@ -320,9 +320,12 @@ GNU Emacs version: 29.4
 
 ## 2. Butterfly
 
-| Language                                  | Execution duration |
-|-------------------------------------------|--------------------|
-| **C**, -O3, basic                         | **172 s**          |
-| **Common Lisp SBCL**, typed and (speed 3) | **138 s**          |
+| Language                                              | Execution duration | function name |
+|-------------------------------------------------------|--------------------|---------------|
+| **C**, -O3, basic                                     | **172 s**          | populate 1    |
+| **C**, -O3, pragma parallelization with chunks        | **42 s**           | populate 2    |
+| **Common Lisp SBCL**, typed and (speed 3)             | **138 s**          | butterfly 1   |
+| **Common Lisp SBCL**, typed, (speed 3) and lparallel  | **35 s**           | butterfly 2   |
+| **Common Lisp SBCL**, typed, (speed 3) and sb-threads | **34 s**           | butterfly 3   |
 
 (end of README)

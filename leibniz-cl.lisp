@@ -1,4 +1,7 @@
 
+(ql:quickload :lparallel)
+
+(defparameter *n6* 1000000)      ;  6 zeros
 (defparameter *n7* 10000000)     ;  7 zeros
 (defparameter *n8* 100000000)    ;  8 zeros
 (defparameter *n9* 1000000000)   ;  9 zeros
@@ -119,6 +122,30 @@
         (format t "Result: ~,20f in ~f seconds~%" tmp duration))))
   nil)
 
+;;; 2-loop unrolling to avoid explicite change of sign + type and speed 3:
+(defun leibniz-5ter (&optional (n *n10*))
+  "Calculate an approximation of π using Leibniz formula."
+  (declare (optimize (speed 3) (safety 0) (debug 0))
+           (type fixnum n))
+  (let ((start-time (get-internal-real-time))
+        (nmax (- n 1))
+        (tmp 0.0d0)
+        (i 0))
+    (declare (type double-float tmp)
+             (type fixnum i nmax))
+    (loop while (<= i nmax)
+          do (progn
+               (setq tmp (+ tmp (/ 1.0d0 (+ (* 2.0d0 i) 1.0d0))))
+               (setq tmp (- tmp (/ 1.0d0 (+ (* 2.0d0 i) 3.0d0))))
+               (setq i (+ i 2))))
+    (setq tmp (* 4.0d0 tmp))
+    (let* ((end-time (get-internal-real-time))
+           (duration (/ (- end-time start-time) (float internal-time-units-per-second))))
+      (locally
+          (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+        (format t "Result: ~,20f in ~f seconds~%" tmp duration))))
+  nil)
+
 ;;; 4-loop unrolling:
 (defun leibniz-6 (&optional (n *n10*))
   "Calculate an approximation of π using Leibniz formula."
@@ -213,5 +240,98 @@
         (format t "Result: ~,20f in ~f seconds~%" tmp duration))))
   nil)
 
- 
+;; lparallel
+
+(defun leibniz-9 ()
+  ""
+
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  
+  (let* ((start-time (get-internal-real-time))
+         (nmax (floor (1- *n10*) 2))
+         (nb-chunks 30)
+         (chunk-size (floor (- nmax 0) nb-chunks))
+         (starts (make-array nb-chunks :element-type 'fixnum :initial-contents
+                             (loop for j of-type fixnum from 1 to nb-chunks
+                                   for start of-type fixnum = 0 then (+ start chunk-size)
+                                   collect start))))
+
+    (declare (type fixnum nmax nb-chunks chunk-size)
+             (type (simple-array fixnum (*)) starts))
+
+    (setq lparallel:*kernel* (lparallel:make-kernel 8))
+
+    (let* ((partial-sums
+             (lparallel:pmap
+              '(simple-array double-float (*))
+              (lambda (start)
+                (declare (type fixnum start))
+                (let ((end (min nmax (+ start chunk-size)))
+                      (sum1 0.0d0))
+                  (declare (type fixnum end)
+                           (type double-float sum1))
+                  (loop for i of-type fixnum from start below end
+                        do
+                           (progn
+                             (setq sum1 (+ sum1 (/ 1.0d0 (+ (* 2.0d0 (* 2.0d0 i)) 1.0d0))))
+                             (setq sum1 (- sum1 (/ 1.0d0 (+ (* 2.0d0 (+ (* 2.0d0 i) 1)) 1.0d0))))))
+                  sum1))
+              starts))
+           (res (* 4.0d0 (reduce #'+ partial-sums)))
+           (end-time (get-internal-real-time))
+           (duration (/ (- end-time start-time) (float internal-time-units-per-second))))
+      (declare (type vector partial-sums)
+               (type double-float res))
+      (locally
+          (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+        (format t "Result: ~,20f in ~f seconds~%" res duration)))))
+
+;; SBCL threads
+
+(defun leibniz-10 ()
+  ""
+
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  
+  (let* ((start-time (get-internal-real-time))
+         (nmax (floor (1- *n10*) 2))
+         (nb-chunks 50)
+         (chunk-size (floor (- nmax 0) nb-chunks))
+         (mutex (sb-thread:make-mutex :name "counter-mutex"))
+         (res 0.0d0)
+         (threads (loop for i from 0 below nb-chunks
+                        collect (sb-thread:make-thread
+	                         (lambda (i)
+                                   (declare (type fixnum i))
+                                   (let* ((start (* i chunk-size))
+                                          (end (min nmax (+ start chunk-size)))
+                                          (sum1 0.0d0))
+                                     (declare (type fixnum start end)
+                                              (type double-float sum1))
+                                     (loop for j of-type fixnum from start below end
+                                           do
+                                              (progn
+                                                (setq sum1 (+ sum1 (/ 1.0d0 (+ (* 2.0d0 (* 2.0d0 j)) 1.0d0))))
+                                                (setq sum1 (- sum1 (/ 1.0d0 (+ (* 2.0d0 (+ (* 2.0d0 j) 1)) 1.0d0))))))
+                                     (sb-thread:with-mutex (mutex)
+                                       (setq res (+ res sum1)))
+                                     nil))
+                                 :arguments (list i)))))
+    (declare (type fixnum nmax nb-chunks chunk-size)
+             (type double-float res))
+    
+    (dolist (thread threads)
+      (sb-thread:join-thread thread))
+    
+    (setq res (* 4.0d0 res))
+    
+    (let* ((end-time (get-internal-real-time))
+           (duration (/ (- end-time start-time) (float internal-time-units-per-second))))
+      (locally
+          (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+        (format t "Result: ~,20f in ~f seconds~%" res duration)))))
+
 ;;; end
+
+
+
