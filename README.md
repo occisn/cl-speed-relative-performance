@@ -40,9 +40,9 @@ For n = 10,000,000,000 (10 zeros) with no SIMD or parallelization at this stage,
 
 | Language                                         | Results                        | Execution duration | Function name |
 |--------------------------------------------------|--------------------------------|--------------------|---------------|
-| **C**, -O3, basic                                | **3.141592653**68834583754     | **10.0 s**         | leibniz 3     |
-| **C**, -O3, with 4-loop unrolling                | **3.141592653**48834582099     | **10.0 s**         | leibniz 4     |
-| **C** with parallelism                           | ???                            | ???                |               |
+| **C**, -O3, basic                                | **3.141592653**48834582099     | **10.1 s**         | leibniz 3b    |
+| **C** with pragma parallelism                    | **3.141592653**48820548880     | **2.8 s**          | leibniz 5     |
+| **C** with pragma parallelism + SIMD             | **3.141592653**49174532389     | **1.5 s**          | leibniz 9     |
 | **SBCL**, basic                                  | **3.14159265**258805040000 [4] | 177 s [4]          | leibniz 2     |
 | **SBCL**, typed and (speed 3)                    | **3.141592653**68834600000     | **10.0 s**         | leibniz 5     |
 | **SBCL**, typed and (speed 3) + 4-loop unrolling | **3.141592653**48834600000     | **9.7 s**          | leibniz 6     |
@@ -85,6 +85,27 @@ int leibniz_3() {
   return EXIT_SUCCESS;
 }
 ```
+
+Execution time: 10.2 s
+
+2-loop unrolling to avoid explicit change of sign = leibiniz_3b : same duration, 10.1 s
+
+4-loop unrolling = leibiniz_4 : same duration, 10.5 s
+
+basic pragma parallelization = leibniz_5 : 2.87 s
+
+basic pragma parallelization with 16-loop unrolling = leibniz_6 : same duration, 2.83 s
+
+pragma parallelization with chunks = leibniz_6b : same duration, 2.8-2,9 s
+
+SIMD vectorization with 8-array for float precision (but no parallelization) = leibniz_7 : 7.3 s but bad precision
+
+SIMD vectorization with 4-array for double precision (but no parallelization) = leibniz_8 : 5.1 s
+ 
+SIMD vectorization with 4-array for double precision, and basic pragma parallelization = leibniz_9 : 1.5 s
+
+SIMD vectorization with 4-array for double precision, and pragma parallelization with chunks = leibniz_9b : same duration, 1.5 s
+
 
 ### 1.3. Common Lisp SBCL
 
