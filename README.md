@@ -15,7 +15,7 @@ More precisely, compared languages will be:
 - Excel: VBA, recursion, array formulas, calling C  
 - (for fun) Gnu Emacs Calc
 
-Any comment? Open an [issue](https://github.com/occisn/relative-performance/issues) or start a [discussion](https://github.com/occisn/relative-performance/discussions), or open a [discussion](https://github.com/occisn/occisn/discussions) at profile level.
+Any comment? Open an [issue](https://github.com/occisn/repo/issues), or start a discussion [here](https://github.com/occisn/repo/discussions) or [at profile level](https://github.com/occisn/occisn/discussions).
 
 
 ## Table of contents
