@@ -15,6 +15,9 @@ More precisely, compared languages will be:
 - Excel: VBA, recursion, array formulas, calling C  
 - (for fun) Gnu Emacs Calc
 
+Any comment? Open an [issue](https://github.com/occisn/relative-performance/issues) or start a [discussion](https://github.com/occisn/relative-performance/discussions), or open a [discussion](https://github.com/occisn/occisn/discussions) at profile level.
+
+
 ## Table of contents
 
 **[1. Leibniz formula](#1-leibniz-formula)** :  
