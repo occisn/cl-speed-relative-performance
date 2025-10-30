@@ -1,4 +1,4 @@
-# relative-performance
+# cl-speed-relative-performance
 
 Hobby project to compare execution speed between several languages, namely C, Common Lisp, Emacs Lisp and... Excel.
 
