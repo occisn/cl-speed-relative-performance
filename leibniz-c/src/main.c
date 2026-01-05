@@ -10,7 +10,7 @@
 #define NB_THREADS 8
 #define NB_CHUNKS (4 * NB_THREADS)
 
-int compare_double(const void *a, const void *b)
+static int compare_double(const void *a, const void *b)
 {
   double arg1 = *(const double *)a;
   double arg2 = *(const double *)b;
