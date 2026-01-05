@@ -6,6 +6,8 @@ In the below examples, we will volontarily not go into manual loop unrolling, SI
 
 Each function is run 5 times, and the second best duration is kept.
 
+Run on `gcc 13.2.0` and `sbcl 2.3.2`.
+
 Several benchmarks:  
 **[1. Leibniz formula](#1-leibniz-formula)**  
 **[2. Morpho butterfly](#2-morpho-butterfly)**  
@@ -14,7 +16,6 @@ Several benchmarks:
 **[5. 1 billion row challenge](#5-1-billion-row-challence-1BRC)**
 
 Any comment? Open an [issue](https://github.com/occisn/repo/issues), or start a discussion [here](https://github.com/occisn/repo/discussions) or [at profile level](https://github.com/occisn/occisn/discussions).
-
 
 ## 1. Leibniz formula
 
@@ -36,7 +37,7 @@ SBCL speed is equivalent to C.
 ### With parallelism:
 
 SBCL speed is equivalent is twice the speed of C.  
-Obviously, speed is the same when C routine is called from SBCL with ffi.
+Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
 | Language                         | Results                    | Execution duration | Function name |
 |----------------------------------|----------------------------|--------------------|---------------|
@@ -46,7 +47,6 @@ Obviously, speed is the same when C routine is called from SBCL with ffi.
 | **SBCL** calling C with sb-alien | **3.141592653**48946759033 | **1.4 s**          | leibniz-4     |
 | **SBCL** calling C with CFFI     | **3.141592653**48946759033 | **1.4 s**           | leibniz-5     |
 
-
 ## 2. Morpho Butterfly
 
 (later)
@@ -55,20 +55,33 @@ Obviously, speed is the same when C routine is called from SBCL with ffi.
 
 Computation of 46th Fibonacci method with naive (inefficient) method.
 
+Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](https://github.com/bddicken/languages)).
+
 SBCL is much slower than C.  
-Obviously, speed is the same when C routine is called from SBCL with ffi.
+Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
 | Language                         | Execution duration | Function name     |
 |----------------------------------|--------------------|-------------------|
 | **C**, -O3                       | **2.9 s**          |                   |
-| **SBCL**, (speed 3)              | **11.9s **         | naive-fibonacci-1 |
+| **SBCL**, (speed 3)              | **11.9 s **        | naive-fibonacci-1 |
 | **SBCL** calling C with sb-alien | **3.0 s**          | naive-fibonacci-2 |
 | **SBCL** calling C with CFFI     | **3.0 s**          | naive-fibonacci-3 |
 
-
 ## 4. Loops
 
-(later)
+Tight nested loops.
+
+Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](https://github.com/bddicken/languages)).
+
+SBCL is 4 times slower than C.  
+Obviously, speed is the same when C routine is called from SBCL with ffi.
+
+| Language                         | Execution duration | Function name |
+|----------------------------------|--------------------|---------------|
+| **C**, -O3                       | **5.9 s**          |               |
+| **SBCL**, (speed 3)              | **24.7 s **        | loops-1       |
+| **SBCL** calling C with sb-alien | **5.9 s**          | loops-2       |
+| **SBCL** calling C with CFFI     | **6.5 s**          | loops-3       |
 
 ## 5. 1 billion row challenge (1BRC)
 

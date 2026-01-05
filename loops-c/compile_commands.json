@@ -1,0 +1,20 @@
+[
+ {
+  "directory": "c:\\Users\\noccis\\Dropbox\\local-repos\\cl-speed-relative-performance\\loops-c",
+  "arguments": [
+   "gcc",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-pedantic",
+   "-std=c2x",
+   "-O3",
+   "-Isrc",
+   "-c",
+   "src/main.c",
+   "-o",
+   "build/main.o"
+  ],
+  "file": "src/main.c"
+ }
+]
