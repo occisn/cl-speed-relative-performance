@@ -1,6 +1,6 @@
 # cl-speed-relative-performance
 
-Hobby project to compare Common Lisp (SBCL) execution speed with C
+Hobby project to compare Common Lisp (SBCL) execution speed with C.
 
 In the below examples, we will volontarily not go into manual loop unrolling, SIMD, etc.
 
