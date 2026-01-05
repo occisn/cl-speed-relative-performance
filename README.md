@@ -6,7 +6,7 @@ In the below examples, we will volontarily not go into manual loop unrolling, SI
 
 Each function is run 5 times, and the second best duration is kept.
 
-Several benchmarks:
+Several benchmarks:  
 **[1. Leibniz formula](#1-leibniz-formula)**  
 **[2. Morpho butterfly](#2-morpho-butterfly)**  
 **[3. Naive Fibonacci](#3-naive-fibonacci)**  
@@ -53,7 +53,18 @@ Obviously, speed is the same when C routine is called from SBCL with ffi.
 
 ## 3. Naive Fibonacci
 
-(later)
+Computation of 46th Fibonacci method with naive (inefficient) method.
+
+SBCL is much slower than C.  
+Obviously, speed is the same when C routine is called from SBCL with ffi.
+
+| Language                         | Execution duration | Function name     |
+|----------------------------------|--------------------|-------------------|
+| **C**, -O3                       | **2.9 s**          |                   |
+| **SBCL**, (speed 3)              | **11.9s **         | naive-fibonacci-1 |
+| **SBCL** calling C with sb-alien | **3.0 s**          | naive-fibonacci-2 |
+| **SBCL** calling C with CFFI     | **3.0 s**          | naive-fibonacci-3 |
+
 
 ## 4. Loops
 
