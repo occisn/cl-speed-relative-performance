@@ -62,7 +62,7 @@ Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 | Language                         | Execution duration | Function name     |
 |----------------------------------|--------------------|-------------------|
 | **C**, -O3                       | **2.9 s**          |                   |
-| **SBCL**, (speed 3)              | **11.9 s **        | naive-fibonacci-1 |
+| **SBCL**, (speed 3)              | **11.9 s**         | naive-fibonacci-1 |
 | **SBCL** calling C with sb-alien | **3.0 s**          | naive-fibonacci-2 |
 | **SBCL** calling C with CFFI     | **3.0 s**          | naive-fibonacci-3 |
 
@@ -78,7 +78,7 @@ Obviously, speed is the same when C routine is called from SBCL with ffi.
 | Language                         | Execution duration | Function name |
 |----------------------------------|--------------------|---------------|
 | **C**, -O3                       | **5.9 s**          |               |
-| **SBCL**, (speed 3)              | **24.7 s **        | loops-1       |
+| **SBCL**, (speed 3)              | **24.7 s**         | loops-1       |
 | **SBCL** calling C with sb-alien | **5.9 s**          | loops-2       |
 | **SBCL** calling C with CFFI     | **6.5 s**          | loops-3       |
 
