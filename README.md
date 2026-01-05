@@ -12,8 +12,7 @@ Several benchmarks:
 **[1. Leibniz formula](#1-leibniz-formula)**  
 **[2. Morpho butterfly](#2-morpho-butterfly)**  
 **[3. Naive Fibonacci](#3-naive-fibonacci)**  
-**[4. Loops](#4-loops)**  
-**[5. 1 billion row challenge](#5-1-billion-row-challence-1BRC)**
+**[4. Loops](#4-loops)**
 
 Any comment? Open an [issue](https://github.com/occisn/repo/issues), or start a discussion [here](https://github.com/occisn/repo/discussions) or [at profile level](https://github.com/occisn/occisn/discussions).
 
@@ -82,9 +81,5 @@ Obviously, speed is the same when C routine is called from SBCL with ffi.
 | **SBCL**, (speed 3)              | **24.7 s **        | loops-1       |
 | **SBCL** calling C with sb-alien | **5.9 s**          | loops-2       |
 | **SBCL** calling C with CFFI     | **6.5 s**          | loops-3       |
-
-## 5. 1 billion row challenge (1BRC)
-
-(later)
 
 (end of README)
