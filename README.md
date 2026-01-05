@@ -35,7 +35,7 @@ SBCL speed is equivalent to C.
 
 ### With parallelism:
 
-SBCL speed is equivalent is twice the speed of C.  
+SBCL is twice slower than C.  
 Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
 | Language                         | Results                    | Execution duration | Function name |
@@ -56,7 +56,7 @@ Computation of 46th Fibonacci method with naive (inefficient) method.
 
 Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](https://github.com/bddicken/languages)).
 
-SBCL is much slower than C.  
+SBCL is 4 times slower than C.  
 Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
 | Language                         | Execution duration | Function name     |
