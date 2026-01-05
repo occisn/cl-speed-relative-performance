@@ -99,10 +99,10 @@
 
   (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
 
-  (cffi:define-foreign-library libleibniz
+  (cffi:define-foreign-library libfibonacci
     (:windows "c:/Users/noccis/Dropbox/local-repos/cl-speed-relative-performance/naive-fibonacci-cl/ffi-c-library/fib.dll"))
 
-  (cffi:use-foreign-library libleibniz)
+  (cffi:use-foreign-library libfibonacci)
 
   (cffi:defcfun ("naive_fibonacci" c-naive-fibonacci-3)
       :double
