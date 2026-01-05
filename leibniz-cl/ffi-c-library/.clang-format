@@ -1,0 +1,21 @@
+
+BasedOnStyle: LLVM
+ColumnLimit: 0
+# 0 to disable line breaking entirely
+# or 70, 80, 120, etc
+
+# Keep function arguments on same line if possible
+BinPackArguments: true
+BinPackParameters: true
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Brace open on next line for functions
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true           # Functions: brace on next line
+  AfterControlStatement: Never  # if/while/for: brace on same line
+  AfterClass: false
+  AfterStruct: false
+  AfterEnum: false
+  AfterNamespace: false
