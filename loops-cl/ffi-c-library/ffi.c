@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define n 100000 // 100 K
-#define m 100000 // 100 K
+#define n 10000 // 10 K
+#define m 1000000 // 1 M
 
 static int loops(void)
 {

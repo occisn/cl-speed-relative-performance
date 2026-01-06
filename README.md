@@ -75,11 +75,13 @@ Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](
 SBCL is 4 times slower than C.  
 Obviously, speed is the same when C routine is called from SBCL with ffi.
 
-| Language                         | Execution duration | Function name |
-|----------------------------------|--------------------|---------------|
-| **C**, -O3                       | **5.9 s**          |               |
-| **SBCL**, (speed 3)              | **24.7 s**         | loops-1       |
-| **SBCL** calling C with sb-alien | **5.9 s**          | loops-2       |
-| **SBCL** calling C with CFFI     | **6.5 s**          | loops-3       |
+| Language                            | Execution duration | Function name |
+|-------------------------------------|--------------------|---------------|
+| **C**, -O3, stack allocation        | **6.2 s**          | loops_1       |
+| **C**, -O3, heap allocation         | **6.2 s**          | loops_2       |
+| **SBCL** (speed 3)                  | **25.7 s**         | loops-1       |
+| **SBCL** (speed 3), arrays on stack | **27.8 s**         | loops-2       |
+| **SBCL** calling C with sb-alien    | **7.0 s**          | loops-A       |
+| **SBCL** calling C with CFFI        | **6.9 s**          | loops-B       |
 
 (end of README)
