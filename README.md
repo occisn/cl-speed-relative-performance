@@ -12,7 +12,7 @@ Several benchmarks:
 **[1. Leibniz formula](#1-leibniz-formula)**  
 **[2. Morpho butterfly](#2-morpho-butterfly)**  
 **[3. Naive Fibonacci](#3-naive-fibonacci)**  
-**[4. Loops](#4-loops)**
+**[4. Tight nested loops](#4-tight-nested-loops)**
 
 Any comment? Open an [issue](https://github.com/occisn/repo/issues), or start a discussion [here](https://github.com/occisn/repo/discussions) or [at profile level](https://github.com/occisn/occisn/discussions).
 
@@ -66,7 +66,7 @@ Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 | **SBCL** calling C with sb-alien | **3.0 s**          | naive-fibonacci-2 |
 | **SBCL** calling C with CFFI     | **3.0 s**          | naive-fibonacci-3 |
 
-## 4. Loops
+## 4. Tight nested loops
 
 Tight nested loops.
 
