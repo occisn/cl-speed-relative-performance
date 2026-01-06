@@ -59,12 +59,14 @@ Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](
 SBCL is 4 times slower than C.  
 Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
-| Language                         | Execution duration | Function name     |
-|----------------------------------|--------------------|-------------------|
-| **C**, -O3                       | **2.9 s**          |                   |
-| **SBCL**, (speed 3)              | **11.9 s**         | naive-fibonacci-1 |
-| **SBCL** calling C with sb-alien | **3.0 s**          | naive-fibonacci-2 |
-| **SBCL** calling C with CFFI     | **3.0 s**          | naive-fibonacci-3 |
+| Language                                       | Execution duration | Function name     |
+|------------------------------------------------|--------------------|-------------------|
+| **C**, -O3                                     | **3.0 s**          | naive_fibonacci_1 |
+| **C**, -O3, not inlined                        | **3.3 s**          | naive_fibonacci_2 |
+| **SBCL**, (speed 3)                            | **11.9 s**         | naive-fibonacci-1 |
+| **SBCL**, (speed 3), inlined with ceiling on n | **11.9 s**         | naive-fibonacci-2 |
+| **SBCL** calling C with sb-alien               | **3.0 s**          | naive-fibonacci-A |
+| **SBCL** calling C with CFFI                   | **3.0 s**          | naive-fibonacci-B |
 
 ## 4. Tight nested loops
 
