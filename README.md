@@ -56,17 +56,19 @@ Computation of 46th Fibonacci method with naive (inefficient) method.
 
 Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](https://github.com/bddicken/languages)).
 
-SBCL is 4 times slower than C.  
+SBCL is 4 times slower than C, probably due to function calls.  
 Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
 | Language                                       | Execution duration | Function name     |
 |------------------------------------------------|--------------------|-------------------|
 | **C**, -O3                                     | **3.0 s**          | naive_fibonacci_1 |
-| **C**, -O3, not inlined                        | **3.3 s**          | naive_fibonacci_2 |
+| **C**, -O3, not inlined [0]                    | **3.3 s**          | naive_fibonacci_2 |
 | **SBCL**, (speed 3)                            | **11.9 s**         | naive-fibonacci-1 |
 | **SBCL**, (speed 3), inlined with ceiling on n | **11.9 s**         | naive-fibonacci-2 |
 | **SBCL** calling C with sb-alien               | **3.0 s**          | naive-fibonacci-A |
 | **SBCL** calling C with CFFI                   | **3.0 s**          | naive-fibonacci-B |
+
+[0] Looking at assembly code, the function is actually not inlined.
 
 ## 4. Tight nested loops
 

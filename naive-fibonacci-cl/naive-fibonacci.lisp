@@ -186,7 +186,7 @@
 (defun main ()
   (let ((n 46))                         ; 1836311903
     (declare (type fixnum n))
-    (naive-fibonacci-1 n)
+    ;; (naive-fibonacci-1 n)
     ;; (naive-fibonacci-1--benchmark-5-times n)
     (naive-fibonacci-2 n)
     ;; (naive-fibonacci-A n)
@@ -195,5 +195,5 @@
     ;; (naive-fibonacci-B--benchmark-5-times n)
     ))
 
-
 ;;; end
+
