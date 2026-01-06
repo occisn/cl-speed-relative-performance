@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define n 10000 // 10 K
+#define n 10000   // 10 K
 #define m 1000000 // 1 M
 
 static int compare_double(const void *a, const void *b)
@@ -26,14 +26,14 @@ double loops_1(void)
 
   int sum = 0;
   const int u = 40;
-  srand(time(NULL));     
-  const int r = rand() % 10000;      // Get a random integer 0 <= r < 10k
-  int32_t a[n] = {0};            
-  for (int i = 1; i < n; i++) {  
+  srand(time(NULL));
+  const int r = rand() % 10000; // Get a random integer 0 <= r < 10k
+  int32_t a[n] = {0};
+  for (int i = 1; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      a[i] = a[i] + (j + r) % u; 
+      a[i] = a[i] + (j + r) % u;
     }
-    a[i] += r; 
+    a[i] += r;
     sum += a[i];
   }
 
@@ -85,18 +85,18 @@ double loops_2(void)
 
   int sum = 0;
   const int u = 40;
-  srand(time(NULL));     
-  const int r = rand() % 10000;      // Get a random integer 0 <= r < 10k
+  srand(time(NULL));
+  const int r = rand() % 10000; // Get a random integer 0 <= r < 10k
   int32_t *a = calloc(n, sizeof(int32_t));
   if (a == NULL) {
     printf("ALLOCATION FAILURE\n");
     return 0;
   }
-  for (int i = 1; i < n; i++) {  
+  for (int i = 1; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      a[i] = a[i] + (j + r) % u; 
+      a[i] = a[i] + (j + r) % u;
     }
-    a[i] += r; 
+    a[i] += r;
     sum += a[i];
   }
   free(a);

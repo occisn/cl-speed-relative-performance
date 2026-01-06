@@ -10,34 +10,35 @@
                    (safety 0)
                    (speed 3)))
 
-(defparameter *n* 10000)   ; 10 K
-(defparameter *m* 1000000) ; 1 M
-(defparameter *u* 40)
-(declaim (type fixnum *n* *m* *u*))
+(defparameter +n+ 10000)   ; 10 K
+(defparameter +m+ 1000000) ; 1 M
+(defparameter +u+ 40)
+(declaim (type fixnum +n+ +m+))
+(declaim (type (integer 1 #.most-positive-fixnum) +u+)) ; u > 0
 
 
 (defun loops-1 ()
   "Run loops with timing and return duration."
-  (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
   (let ((start (get-internal-real-time)))
 
     (let* ((sum 0)
-         (r (random 10000)) ;; Random number 0..9999
-         (a (make-array *n* :element-type '(unsigned-byte 32) :initial-element 0)))
-    (declare (type (simple-array (unsigned-byte 32) (*)) a))
-    (declare (type fixnum sum r))
-    ;; (format t "r = ~a~%" r)
-    (loop for i of-type fixnum from 1 below *n*
-          do (progn
-               (loop for j of-type fixnum from 0 below *m*
-                     do (setf (aref a i)
-                              (+ (aref a i)
-                                 (the fixnum (mod (the fixnum (+ j r)) *u*)))))
-               (incf (aref a i) r)
-               (incf sum (aref a i)))) 
-    (locally
-        (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
-      (format t "sum = ~a~%" sum)))
+           (r (random 10000)) ;; Random number 0..9999
+           (a (make-array +n+ :element-type '(unsigned-byte 32) :initial-element 0)))
+      (declare (type (simple-array (unsigned-byte 32) (*)) a))
+      (declare (type fixnum sum r))
+      (dotimes (i (1- +n+))
+        (declare (type fixnum i))
+        (incf i)
+        (dotimes (j +m+)
+          (declare (type fixnum j))
+          (incf (aref a i)
+                (the (unsigned-byte 32) (mod (the fixnum (+ j r)) +u+))))
+        (incf (aref a i) r)
+        (incf sum (aref a i)))
+      
+      (locally
+          (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+        (format t "sum = ~a~%" sum)))
     
     (let ((end (get-internal-real-time)))
       ;; SBCL internal time unit is 1/10,000 of a second
@@ -71,27 +72,27 @@
 
 (defun loops-2 ()
   "Run loops with timing and return duration."
-  (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
   (let ((start (get-internal-real-time)))
 
     (let* ((sum 0)
-         (r (random 10000)) ;; Random number 0..9999
-         (a (make-array *n* :element-type '(unsigned-byte 32) :initial-element 0)))
-    (declare (dynamic-extent a))
-    (declare (type (simple-array (unsigned-byte 32) (*)) a))
-    (declare (type fixnum sum r))
-    ;; (format t "r = ~a~%" r)
-    (loop for i of-type fixnum from 1 below *n*
-          do (progn
-               (loop for j of-type fixnum from 0 below *m*
-                     do (setf (aref a i)
-                              (+ (aref a i)
-                                 (the fixnum (mod (the fixnum (+ j r)) *u*)))))
-               (incf (aref a i) r)
-               (incf sum (aref a i)))) 
-    (locally
-        (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
-      (format t "sum = ~a~%" sum)))
+           (r (random 10000)) ;; Random number 0..9999
+           (a (make-array +n+ :element-type '(unsigned-byte 32) :initial-element 0)))
+      (declare (dynamic-extent a))
+      (declare (type (simple-array (unsigned-byte 32) (*)) a))
+      (declare (type fixnum sum r))
+      (dotimes (i (1- +n+))
+        (declare (type fixnum i))
+        (incf i)
+        (dotimes (j +m+)
+          (declare (type fixnum j))
+          (incf (aref a i)
+                (the (unsigned-byte 32) (mod (the fixnum (+ j r)) +u+))))
+        (incf (aref a i) r)
+        (incf sum (aref a i)))
+      
+      (locally
+          (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+        (format t "sum = ~a~%" sum)))
     
     (let ((end (get-internal-real-time)))
       ;; SBCL internal time unit is 1/10,000 of a second
@@ -132,7 +133,7 @@
   
   (sb-alien:define-alien-routine
       ("run" c-loops-A)
-      sb-alien:double)
+    sb-alien:double)
 
   (let ((duration (c-loops-A)))
     (format t "C function returned duration = ~f~%" duration)
@@ -168,12 +169,12 @@
   (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
 
   (cffi:define-foreign-library libloops
-    (:windows "c:/Users/noccis/Dropbox/local-repos/cl-speed-relative-performance/loops-cl/ffi-c-library/ffi.dll"))
+      (:windows "c:/Users/noccis/Dropbox/local-repos/cl-speed-relative-performance/loops-cl/ffi-c-library/ffi.dll"))
 
   (cffi:use-foreign-library libloops)
 
   (cffi:defcfun ("run" c-loops-B)
-      :double)
+    :double)
 
   (let ((duration (c-loops-B)))
     (format t "C function returned duration = ~f~%" duration)

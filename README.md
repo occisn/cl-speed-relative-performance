@@ -76,16 +76,20 @@ Tight nested loops.
 
 Inspired by Ben Dicken ([moving balls](https://benjdd.com/languages/), [Github](https://github.com/bddicken/languages)).
 
-SBCL is 4 times slower than C.  
-Obviously, speed is the same when C routine is called from SBCL with ffi.
+SBCL is twice slower than C.  
+Speed is the same when C routine is called from SBCL with ffi.
 
 | Language                            | Execution duration | Function name |
 |-------------------------------------|--------------------|---------------|
-| **C**, -O3, stack allocation        | **6.2 s**          | loops_1       |
-| **C**, -O3, heap allocation         | **6.2 s**          | loops_2       |
-| **SBCL** (speed 3)                  | **25.7 s**         | loops-1       |
-| **SBCL** (speed 3), arrays on stack | **27.8 s**         | loops-2       |
-| **SBCL** calling C with sb-alien    | **7.0 s**          | loops-A       |
-| **SBCL** calling C with CFFI        | **6.9 s**          | loops-B       |
+| **C**, -O3, stack allocation        | **6.0 s**          | loops_1       |
+| **C**, -O3, heap allocation         | **6.0 s**          | loops_2       |
+| **SBCL** (speed 3)                  | **12.3 s**         | loops-1       |
+| **SBCL** (speed 3), arrays on stack | **12.3 s**         | loops-2       |
+| **SBCL** calling C with sb-alien    | **6.0 s**          | loops-A       |
+| **SBCL** calling C with CFFI        | **6.1 s**          | loops-B       |
+
+Note: `dotimes` is better than `loop` to help the compiler to optimize.  
+Note: `defconstant` rather than `defparameter`  
+Note: multiple `(aref arr i)` do not help.
 
 (end of README)
