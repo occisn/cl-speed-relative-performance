@@ -48,7 +48,17 @@ Obviously, speed is the same when C routine is called from SBCL with `ffi`.
 
 ## 2. Morpho Butterfly
 
-(later)
+Hamid Naderi Yeganeh is an artist which draws pictures with mathematical equations: [Wikipedia](https://en.wikipedia.org/wiki/Hamid_Naderi_Yeganeh), [X](https://x.com/naderi_yeganeh), [Instagram](https://www.instagram.com/hamidnaderiyeganeh/), [YouTube](https://www.youtube.com/@naderiyeganeh).
+
+Morpho buttterfly is one of his artworks ([X](https://www.instagram.com/p/DQmRlpliAVM/), [Instagram](https://x.com/naderi_yeganeh/status/1754107434224804305/)).
+
+I have reproduced it in C and Common Lisp: code is in dedicated personal repositories ([C](https://github.com/occisn/c-morpho-butterfly), [Common Lisp](https://github.com/occisn/cl-morpho-butterfly)).
+
+| Language                                                            | Execution duration |
+|---------------------------------------------------------------------|--------------------|
+| **C**, -O3 with parallelism                                         | **32 s**           |
+| **SBCL** with parallelism                                           | **41 s**           |
+| **SBCL** with parallelism and all calculations in the same function | **37 s**           |
 
 ## 3. Naive Fibonacci
 
